@@ -59,29 +59,23 @@
 
   /* ===== NEON TUBE SIGN EFFECT ===== */
   .neon-tube-yellow {
-    color: #fffde6;
-    -webkit-text-stroke: 1.5px var(--neon-yellow);
+    color: var(--neon-yellow);
+    -webkit-text-stroke: 1.5px rgba(245,230,66,0.6);
     text-shadow:
-      0 0 4px #fff,
-      0 0 10px var(--neon-yellow),
-      0 0 20px var(--neon-yellow),
-      0 0 40px var(--neon-yellow),
-      0 0 80px rgba(245,230,66,0.4),
-      0 0 120px rgba(245,230,66,0.2);
-    filter: brightness(1.1);
+      0 0 8px rgba(245,230,66,0.5),
+      0 0 20px rgba(245,230,66,0.3),
+      0 0 40px rgba(245,230,66,0.15),
+      0 0 80px rgba(245,230,66,0.08);
   }
 
   .neon-tube-pink {
-    color: #ffe6f0;
-    -webkit-text-stroke: 1.5px var(--neon-pink);
+    color: var(--neon-pink);
+    -webkit-text-stroke: 1.5px rgba(255,45,138,0.6);
     text-shadow:
-      0 0 4px #fff,
-      0 0 10px var(--neon-pink),
-      0 0 20px var(--neon-pink),
-      0 0 40px var(--neon-pink),
-      0 0 80px rgba(255,45,138,0.4),
-      0 0 120px rgba(255,45,138,0.2);
-    filter: brightness(1.1);
+      0 0 8px rgba(255,45,138,0.5),
+      0 0 20px rgba(255,45,138,0.3),
+      0 0 40px rgba(255,45,138,0.15),
+      0 0 80px rgba(255,45,138,0.08);
   }
 
   /* Legacy classes kept for other elements */
@@ -246,8 +240,8 @@
   .hero h1 {
     font-family: 'Righteous', cursive;
     font-size: clamp(5rem, 16vw, 12rem);
-    line-height: 0.95;
-    letter-spacing: 0.03em;
+    line-height: 1.0;
+    letter-spacing: 0.06em;
     margin-bottom: 2rem;
     animation: fadeUp 0.8s ease;
   }
@@ -410,7 +404,7 @@
   .marquee-track {
     display: flex;
     gap: 2.5rem;
-    animation: marquee 220s linear infinite;
+    animation: marquee 275s linear infinite;
     width: max-content;
   }
 
@@ -789,12 +783,21 @@
     .mobile-menu-btn { display: block; }
 
     .hero h1 {
-      font-size: clamp(3.5rem, 14vw, 6rem);
+      font-size: clamp(4rem, 16vw, 7rem);
+      letter-spacing: 0.08em;
     }
 
-    .neon-tube-yellow,
+    .neon-tube-yellow {
+      -webkit-text-stroke: 1px rgba(245,230,66,0.4);
+      text-shadow:
+        0 0 6px rgba(245,230,66,0.35),
+        0 0 15px rgba(245,230,66,0.15);
+    }
     .neon-tube-pink {
-      -webkit-text-stroke: 1px;
+      -webkit-text-stroke: 1px rgba(255,45,138,0.4);
+      text-shadow:
+        0 0 6px rgba(255,45,138,0.35),
+        0 0 15px rgba(255,45,138,0.15);
     }
 
     .episode-card {
@@ -820,213 +823,7 @@
     .hero-buttons { flex-direction: column; align-items: center; }
     .hero-platforms { flex-wrap: wrap; justify-content: center; }
 
-    .qm-answers { grid-template-columns: 1fr !important; }
-    .qm-modal { width: 95% !important; padding: 2rem 1.2rem !important; }
   }
-
-  /* ===== QUIZ MODAL ===== */
-  .qm-overlay {
-    position: fixed;
-    inset: 0;
-    z-index: 200;
-    background: rgba(0,0,0,0.85);
-    backdrop-filter: blur(8px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.3s;
-  }
-  .qm-overlay.active {
-    opacity: 1;
-    pointer-events: all;
-  }
-  .qm-modal {
-    background: #0e0e0e;
-    border: 1px solid rgba(255,45,138,0.25);
-    border-radius: 20px;
-    padding: 3rem 2.5rem;
-    width: 680px;
-    max-width: 95vw;
-    max-height: 90vh;
-    overflow-y: auto;
-    position: relative;
-    box-shadow: 0 0 60px rgba(255,45,138,0.1), 0 0 120px rgba(245,230,66,0.05);
-  }
-  .qm-close {
-    position: absolute;
-    top: 1rem;
-    right: 1.2rem;
-    background: none;
-    border: none;
-    color: var(--text-dim);
-    font-size: 1.8rem;
-    cursor: pointer;
-    transition: color 0.2s;
-    line-height: 1;
-  }
-  .qm-close:hover { color: var(--neon-pink); }
-
-  .qm-header {
-    text-align: center;
-    margin-bottom: 2rem;
-  }
-  .qm-round-label {
-    font-size: 0.72rem;
-    text-transform: uppercase;
-    letter-spacing: 0.18em;
-    color: var(--neon-pink);
-    font-weight: 700;
-    margin-bottom: 0.5rem;
-    text-shadow: 0 0 8px rgba(255,45,138,0.3);
-  }
-  .qm-round-title {
-    font-family: 'Righteous', cursive;
-    font-size: 1.8rem;
-    margin-bottom: 0.3rem;
-  }
-  .qm-progress {
-    font-size: 0.8rem;
-    color: var(--text-dim);
-  }
-  .qm-timer {
-    display: inline-block;
-    font-family: 'Righteous', cursive;
-    font-size: 2rem;
-    color: var(--neon-yellow);
-    text-shadow: 0 0 12px var(--neon-yellow-glow);
-    margin-top: 0.5rem;
-  }
-  .qm-timer.danger {
-    color: var(--neon-pink);
-    text-shadow: 0 0 12px var(--neon-pink-glow);
-    animation: blink 0.5s infinite;
-  }
-
-  .qm-question {
-    font-family: 'Righteous', cursive;
-    font-size: 1.25rem;
-    line-height: 1.5;
-    text-align: center;
-    margin-bottom: 2rem;
-    min-height: 3rem;
-  }
-
-  .qm-answers {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.75rem;
-    margin-bottom: 1.5rem;
-  }
-  .qm-answer {
-    background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 12px;
-    padding: 1rem 1.2rem;
-    color: var(--white);
-    font-family: 'Outfit', sans-serif;
-    font-size: 0.95rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s;
-    text-align: left;
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-  }
-  .qm-answer:hover {
-    border-color: var(--neon-yellow);
-    background: rgba(245,230,66,0.04);
-  }
-  .qm-answer .qm-letter {
-    font-family: 'Righteous', cursive;
-    font-size: 0.9rem;
-    width: 30px;
-    height: 30px;
-    border-radius: 8px;
-    background: rgba(255,255,255,0.06);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    color: var(--text-dim);
-  }
-  .qm-answer.correct {
-    border-color: #2ecc71 !important;
-    background: rgba(46,204,113,0.12) !important;
-  }
-  .qm-answer.correct .qm-letter {
-    background: #2ecc71;
-    color: #fff;
-  }
-  .qm-answer.wrong {
-    border-color: var(--neon-pink) !important;
-    background: rgba(255,45,138,0.12) !important;
-  }
-  .qm-answer.wrong .qm-letter {
-    background: var(--neon-pink);
-    color: #fff;
-  }
-  .qm-answer.disabled {
-    pointer-events: none;
-    opacity: 0.5;
-  }
-
-  /* Round summary / final screen */
-  .qm-summary {
-    text-align: center;
-  }
-  .qm-score-big {
-    font-family: 'Righteous', cursive;
-    font-size: 4rem;
-    color: var(--neon-yellow);
-    text-shadow: 0 0 20px var(--neon-yellow-glow);
-    line-height: 1.1;
-  }
-  .qm-score-label {
-    font-size: 0.85rem;
-    color: var(--text-dim);
-    margin-bottom: 1rem;
-  }
-  .qm-rating {
-    font-family: 'Righteous', cursive;
-    font-size: 1.6rem;
-    margin-bottom: 0.5rem;
-  }
-  .qm-rating-sub {
-    font-size: 0.9rem;
-    color: var(--text-dim);
-    margin-bottom: 2rem;
-  }
-  .qm-btn {
-    display: inline-block;
-    padding: 0.85rem 2.2rem;
-    border-radius: 100px;
-    font-weight: 700;
-    font-size: 1rem;
-    border: none;
-    cursor: pointer;
-    font-family: 'Outfit', sans-serif;
-    transition: box-shadow 0.3s, transform 0.2s;
-  }
-  .qm-btn-pink {
-    background: var(--neon-pink);
-    color: var(--white);
-  }
-  .qm-btn-pink:hover {
-    box-shadow: 0 0 25px var(--neon-pink-glow);
-    transform: translateY(-2px);
-  }
-  .qm-btn-yellow {
-    background: var(--neon-yellow);
-    color: var(--black);
-  }
-  .qm-btn-yellow:hover {
-    box-shadow: 0 0 25px var(--neon-yellow-glow);
-    transform: translateY(-2px);
-  }
-  .qm-btn + .qm-btn { margin-left: 0.75rem; }
 
   .quiz-tag.available {
     cursor: pointer;
@@ -1034,9 +831,12 @@
     color: var(--neon-pink);
     background: rgba(255,45,138,0.06);
     position: relative;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
   }
   .quiz-tag.available::after {
-    content: '▶';
+    content: ' ▶';
     font-size: 0.6rem;
     margin-left: 0.3rem;
   }
@@ -1281,20 +1081,20 @@
       <h2 class="section-title"><span class="neon-pink">Think</span> You're a Trivia Champion?</h2>
       <p class="section-desc">Play along with quizzes from each episode. Challenge your friends and see who really knows their stuff.</p>
       <div class="quiz-categories">
-        <span class="quiz-tag available" onclick="startQuiz()">Harry Potter</span>
-        <span class="quiz-tag">The Office</span>
-        <span class="quiz-tag">Geography</span>
-        <span class="quiz-tag">Greek Mythology</span>
-        <span class="quiz-tag">Disney Villains</span>
-        <span class="quiz-tag">Olympics</span>
-        <span class="quiz-tag">True Crime</span>
-        <span class="quiz-tag">LOTR</span>
-        <span class="quiz-tag">Christmas</span>
-        <span class="quiz-tag">Halloween</span>
-        <span class="quiz-tag">Sports</span>
-        <span class="quiz-tag">Movie Quotes</span>
+        <a href="quiz.html?topic=harry-potter" class="quiz-tag available">Harry Potter</a>
+        <a href="quiz.html?topic=the-office" class="quiz-tag available">The Office</a>
+        <a href="quiz.html?topic=geography" class="quiz-tag available">Geography</a>
+        <a href="quiz.html?topic=greek-mythology" class="quiz-tag available">Greek Mythology</a>
+        <a href="quiz.html?topic=disney-villains" class="quiz-tag available">Disney Villains</a>
+        <a href="quiz.html?topic=olympics" class="quiz-tag available">Olympics</a>
+        <a href="quiz.html?topic=true-crime" class="quiz-tag available">True Crime</a>
+        <a href="quiz.html?topic=lotr" class="quiz-tag available">LOTR</a>
+        <a href="quiz.html?topic=christmas" class="quiz-tag available">Christmas</a>
+        <a href="quiz.html?topic=halloween" class="quiz-tag available">Halloween</a>
+        <a href="quiz.html?topic=sports" class="quiz-tag available">Sports</a>
+        <a href="quiz.html?topic=movie-quotes" class="quiz-tag available">Movie Quotes</a>
       </div>
-      <a href="#" class="btn-primary btn-pink">Play a Quiz &#8594;</a>
+      <a href="quiz.html?topic=harry-potter" class="btn-primary btn-pink">Play a Quiz &#8594;</a>
     </div>
   </div>
 </section>
@@ -1383,234 +1183,11 @@
   </div>
 </footer>
 
-<!-- QUIZ MODAL -->
-<div class="qm-overlay" id="qm-overlay">
-  <div class="qm-modal" id="qm-modal"></div>
-</div>
-
 <!-- Clone marquee items for seamless loop -->
 <script>
   const track = document.getElementById('marquee-track');
   const items = track.innerHTML;
   track.innerHTML = items + items;
-</script>
-
-<script>
-// ===== HARRY POTTER QUIZ ENGINE =====
-const hpQuiz = {
-  easy: [
-    { q: "What house is Harry Potter sorted into?", a: ["Gryffindor","Slytherin","Ravenclaw","Hufflepuff"], c: 0 },
-    { q: "What is the name of Harry's pet owl?", a: ["Errol","Hedwig","Pigwidgeon","Scabbers"], c: 1 },
-    { q: "Who is the Half-Blood Prince?", a: ["Dumbledore","Voldemort","Severus Snape","Sirius Black"], c: 2 },
-    { q: "What position does Harry play on the Quidditch team?", a: ["Chaser","Beater","Keeper","Seeker"], c: 3 },
-    { q: "What is the name of the magical map that shows everyone's location at Hogwarts?", a: ["The Marauder's Map","The Hogwarts Atlas","The Weasley Tracker","The Sneakoscope"], c: 0 },
-    { q: "What does the spell 'Expelliarmus' do?", a: ["Creates light","Disarms an opponent","Unlocks doors","Produces a Patronus"], c: 1 },
-    { q: "What are the three Unforgivable Curses?", a: ["Stupefy, Obliviate, Sectumsempra","Avada Kedavra, Crucio, Imperio","Expelliarmus, Lumos, Accio","Petrificus, Reducto, Incendio"], c: 1 },
-    { q: "Who is Hagrid?", a: ["The potions teacher","The headmaster","The Keeper of Keys and Grounds","A Ministry official"], c: 2 },
-    { q: "What does Lord Voldemort's name mean in French?", a: ["Dark lord","Death wish","Flight of death","Evil one"], c: 2 },
-    { q: "What platform do students use to board the Hogwarts Express?", a: ["Platform 8","Platform 9¾","Platform 10½","Platform 7"], c: 1 }
-  ],
-  medium: [
-    { q: "What is the core of Harry's wand?", a: ["Dragon heartstring","Unicorn hair","Phoenix feather","Thestral tail hair"], c: 2 },
-    { q: "What is the name of the pub that serves as the entrance to Diagon Alley?", a: ["The Three Broomsticks","The Hog's Head","The Leaky Cauldron","The Broomstick Inn"], c: 2 },
-    { q: "What creature does Hermione brew Polyjuice Potion to turn into by mistake?", a: ["A dog","A cat","A rat","A toad"], c: 1 },
-    { q: "What is the Hogwarts school motto (translated)?", a: ["Knowledge is power","Never tickle a sleeping dragon","Magic conquers all","Wisdom beyond measure"], c: 1 },
-    { q: "Who destroys the final Horcrux (Nagini)?", a: ["Harry Potter","Ron Weasley","Neville Longbottom","Hermione Granger"], c: 2 },
-    { q: "What form does Hermione's Patronus take?", a: ["A cat","A horse","An otter","A hare"], c: 2 },
-    { q: "What is the name of Dumbledore's phoenix?", a: ["Norbert","Fawkes","Buckbeak","Firenze"], c: 1 },
-    { q: "What type of dragon does Harry face in the Triwizard Tournament?", a: ["Norwegian Ridgeback","Common Welsh Green","Hungarian Horntail","Swedish Short-Snout"], c: 2 },
-    { q: "What does the Mirror of Erised show?", a: ["The future","Your deepest desire","Your worst fear","The past"], c: 1 },
-    { q: "Who was the secret keeper for the Potters before they were betrayed?", a: ["Sirius Black","Remus Lupin","Peter Pettigrew","Albus Dumbledore"], c: 2 }
-  ],
-  hard: [
-    { q: "What is the name of the village where the Gaunts lived?", a: ["Godric's Hollow","Little Hangleton","Ottery St Catchpole","Budleigh Babberton"], c: 1 },
-    { q: "What does Dumbledore see when he looks into the Mirror of Erised?", a: ["Himself as Minister of Magic","Himself holding a pair of thick, woolen socks","His family alive and together","Grindelwald's defeat"], c: 2 },
-    { q: "What is the first password to Dumbledore's office that Harry uses?", a: ["Fizzing Whizzbee","Cockroach Cluster","Lemon drop","Sherbet lemon"], c: 3 },
-    { q: "What is the exact address of the Dursleys' home?", a: ["4 Privet Drive, Little Whinging","12 Grimmauld Place","4 Privet Drive, Little Whinging, Surrey","The Burrow, Devon"], c: 2 },
-    { q: "What is Voldemort's mother's name?", a: ["Merope Gaunt","Morfin Gaunt","Cecilia Gaunt","Hepzibah Smith"], c: 0 },
-    { q: "How many staircases are there at Hogwarts?", a: ["100","142","160","200"], c: 1 },
-    { q: "What is the name of the Weasleys' home?", a: ["The Hollow","The Warren","Shell Cottage","The Burrow"], c: 3 },
-    { q: "What year was the first Harry Potter book published?", a: ["1995","1996","1997","1998"], c: 2 },
-    { q: "Who was the first person to be petrified by the Basilisk in Chamber of Secrets?", a: ["Colin Creevey","Justin Finch-Fletchley","Mrs. Norris","Hermione Granger"], c: 2 },
-    { q: "What spell does Hermione use to unlink the coins for Dumbledore's Army?", a: ["Flagrate","Protean Charm","Geminio","Confundus Charm"], c: 1 }
-  ],
-  lightning: [
-    { q: "What animal can Sirius Black transform into?", a: ["Stag","Rat","Dog","Wolf"], c: 2 },
-    { q: "How many Horcruxes did Voldemort intentionally create?", a: ["5","6","7","8"], c: 1 },
-    { q: "What subject does Professor Flitwick teach?", a: ["Transfiguration","Charms","Defense Against the Dark Arts","Potions"], c: 1 },
-    { q: "What is the name of Hagrid's three-headed dog?", a: ["Fang","Norbert","Fluffy","Aragog"], c: 2 },
-    { q: "What Quidditch team does Ron support?", a: ["Puddlemere United","Kenmare Kestrels","Chudley Cannons","Falmouth Falcons"], c: 2 },
-    { q: "What did Dobby receive from Harry that freed him?", a: ["A galleon","A sock","A hat","A ring"], c: 1 },
-    { q: "In which book does Sirius Black die?", a: ["Goblet of Fire","Order of the Phoenix","Half-Blood Prince","Deathly Hallows"], c: 1 },
-    { q: "What wood is Hermione's wand made from?", a: ["Holly","Vine","Willow","Elm"], c: 1 },
-    { q: "Who killed Dobby?", a: ["Voldemort","Lucius Malfoy","Bellatrix Lestrange","Draco Malfoy"], c: 2 },
-    { q: "What is the name of the entity that guards Azkaban?", a: ["Inferi","Dementors","Death Eaters","Boggarts"], c: 1 }
-  ]
-};
-
-const rounds = [
-  { key:'easy', label:'Round 1', title:'Easy', color:'var(--neon-yellow)' },
-  { key:'medium', label:'Round 2', title:'Medium', color:'var(--neon-pink)' },
-  { key:'hard', label:'Round 3', title:'Hard', color:'var(--neon-yellow)' },
-  { key:'lightning', label:'Lightning Round', title:'Lightning ⚡', color:'var(--neon-pink)' }
-];
-
-let currentRound = 0, currentQ = 0, roundScore = 0, totalScore = 0, ltTimer = null, ltSeconds = 45;
-
-const $ = s => document.querySelector(s);
-const overlay = () => $('#qm-overlay');
-const modal = () => $('#qm-modal');
-
-function startQuiz() {
-  currentRound = 0; currentQ = 0; roundScore = 0; totalScore = 0;
-  overlay().classList.add('active');
-  document.body.style.overflow = 'hidden';
-  showRoundIntro();
-}
-
-function closeQuiz() {
-  overlay().classList.remove('active');
-  document.body.style.overflow = '';
-  if (ltTimer) { clearInterval(ltTimer); ltTimer = null; }
-}
-
-overlay().addEventListener('click', e => { if (e.target === overlay()) closeQuiz(); });
-
-function showRoundIntro() {
-  const r = rounds[currentRound];
-  const isLightning = r.key === 'lightning';
-  modal().innerHTML = `
-    <button class="qm-close" onclick="closeQuiz()">&times;</button>
-    <div class="qm-summary">
-      <div class="qm-round-label">Harry Potter Quiz</div>
-      <h2 class="qm-round-title" style="color:${r.color}">${r.label}: ${r.title}</h2>
-      <p style="color:var(--text-dim);margin:1rem 0 0.5rem;font-size:0.95rem;">
-        ${isLightning ? '10 questions — 45 seconds on the clock. Go fast!' : '10 questions — take your time.'}
-      </p>
-      <p style="color:var(--text-dim);margin-bottom:2rem;font-size:0.85rem;">
-        ${currentRound > 0 ? 'Running total: ' + totalScore + '/' + (currentRound * 10) : 'Test your wizarding knowledge!'}
-      </p>
-      <button class="qm-btn qm-btn-pink" onclick="beginRound()">Start ${r.title} Round &rarr;</button>
-    </div>
-  `;
-}
-
-function beginRound() {
-  currentQ = 0;
-  roundScore = 0;
-  if (rounds[currentRound].key === 'lightning') {
-    ltSeconds = 45;
-    showQuestion();
-    ltTimer = setInterval(() => {
-      ltSeconds--;
-      const el = document.getElementById('qm-timer');
-      if (el) {
-        el.textContent = ltSeconds + 's';
-        if (ltSeconds <= 10) el.classList.add('danger');
-      }
-      if (ltSeconds <= 0) {
-        clearInterval(ltTimer); ltTimer = null;
-        showRoundSummary(true);
-      }
-    }, 1000);
-  } else {
-    showQuestion();
-  }
-}
-
-function showQuestion() {
-  const r = rounds[currentRound];
-  const qs = hpQuiz[r.key];
-  const qObj = qs[currentQ];
-  const isLightning = r.key === 'lightning';
-  const letters = ['A','B','C','D'];
-
-  modal().innerHTML = `
-    <button class="qm-close" onclick="closeQuiz()">&times;</button>
-    <div class="qm-header">
-      <div class="qm-round-label">${r.label}: ${r.title}</div>
-      <div class="qm-progress">Question ${currentQ + 1} of 10</div>
-      ${isLightning ? '<div class="qm-timer" id="qm-timer">' + ltSeconds + 's</div>' : ''}
-    </div>
-    <div class="qm-question">${qObj.q}</div>
-    <div class="qm-answers">
-      ${qObj.a.map((a, i) => `
-        <button class="qm-answer" onclick="pickAnswer(${i}, ${qObj.c})">
-          <span class="qm-letter">${letters[i]}</span>
-          <span>${a}</span>
-        </button>
-      `).join('')}
-    </div>
-  `;
-}
-
-function pickAnswer(picked, correct) {
-  const btns = document.querySelectorAll('.qm-answer');
-  btns.forEach((b, i) => {
-    b.classList.add('disabled');
-    if (i === correct) b.classList.add('correct');
-    if (i === picked && picked !== correct) b.classList.add('wrong');
-  });
-  if (picked === correct) { roundScore++; totalScore++; }
-
-  setTimeout(() => {
-    currentQ++;
-    if (currentQ >= 10) {
-      if (ltTimer) { clearInterval(ltTimer); ltTimer = null; }
-      showRoundSummary(false);
-    } else {
-      showQuestion();
-    }
-  }, rounds[currentRound].key === 'lightning' ? 600 : 1000);
-}
-
-function showRoundSummary(timedOut) {
-  const r = rounds[currentRound];
-  const isLast = currentRound >= rounds.length - 1;
-
-  if (isLast) {
-    showFinalScreen();
-    return;
-  }
-
-  modal().innerHTML = `
-    <button class="qm-close" onclick="closeQuiz()">&times;</button>
-    <div class="qm-summary">
-      <div class="qm-round-label">${r.label} Complete</div>
-      <div class="qm-score-big">${roundScore}/10</div>
-      <div class="qm-score-label">${timedOut ? 'Time\'s up! You answered ' + currentQ + ' of 10' : 'Round score'}</div>
-      <p style="color:var(--text-dim);margin-bottom:2rem;">Running total: ${totalScore}/${(currentRound + 1) * 10}</p>
-      <button class="qm-btn qm-btn-yellow" onclick="nextRound()">Next Round &rarr;</button>
-    </div>
-  `;
-}
-
-function nextRound() {
-  currentRound++;
-  showRoundIntro();
-}
-
-function showFinalScreen() {
-  let rating, ratingColor, ratingSub;
-  if (totalScore <= 10) { rating = '🧹 Muggle'; ratingColor = 'var(--text-dim)'; ratingSub = 'You might need to rewatch the films...'; }
-  else if (totalScore <= 20) { rating = '🦡 Hufflepuff'; ratingColor = '#F0C75E'; ratingSub = 'Loyal effort! You know the basics.'; }
-  else if (totalScore <= 30) { rating = '⚡ Auror'; ratingColor = 'var(--neon-yellow)'; ratingSub = 'Impressive! The Ministry would recruit you.'; }
-  else if (totalScore <= 35) { rating = '🦅 Dumbledore\'s Army'; ratingColor = 'var(--neon-pink)'; ratingSub = 'Outstanding! You\'re ready to fight Voldemort.'; }
-  else { rating = '🧙 Order of the Phoenix'; ratingColor = 'var(--neon-yellow)'; ratingSub = 'Legendary! Dumbledore himself would be proud.'; }
-
-  modal().innerHTML = `
-    <button class="qm-close" onclick="closeQuiz()">&times;</button>
-    <div class="qm-summary">
-      <div class="qm-round-label">Final Score</div>
-      <div class="qm-score-big">${totalScore}/40</div>
-      <div class="qm-score-label">Total correct answers</div>
-      <div class="qm-rating" style="color:${ratingColor}">${rating}</div>
-      <div class="qm-rating-sub">${ratingSub}</div>
-      <button class="qm-btn qm-btn-pink" onclick="startQuiz()">Play Again</button>
-      <button class="qm-btn qm-btn-yellow" onclick="closeQuiz()" style="margin-left:0.75rem;">Close</button>
-    </div>
-  `;
-}
 </script>
 
 </body>

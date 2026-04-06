@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz — Witty Trivia</title>
+<link href="https://fonts.googleapis.com/css2?family=Righteous&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --neon-yellow: #F5E642;
+    --neon-pink: #FF2D8A;
+    --neon-pink-glow: rgba(255,45,138,0.5);
+    --neon-yellow-glow: rgba(245,230,66,0.5);
+    --black: #0A0A0A;
+    --white: #FFFFFF;
+    --text-dim: #888888;
+    --text-mid: #BBBBBB;
+    --card-bg: rgba(255,255,255,0.03);
+    --card-border: rgba(255,255,255,0.06);
+    --green: #2ecc71;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior:smooth; }
+  body {
+    font-family:'Outfit',sans-serif;
+    background:var(--black);
+    color:var(--white);
+    min-height:100vh;
+  }
+  body::before {
+    content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='100'%3E%3Crect width='200' height='100' fill='%230a0a0a'/%3E%3Crect x='1' y='1' width='96' height='46' rx='2' ry='2' fill='%23111'/%3E%3Crect x='101' y='1' width='96' height='46' rx='2' ry='2' fill='%23101010'/%3E%3Crect x='51' y='51' width='96' height='46' rx='2' ry='2' fill='%23111'/%3E%3Crect x='151' y='51' width='48' height='46' rx='2' ry='2' fill='%23101010'/%3E%3Crect x='0' y='51' width='47' height='46' rx='2' ry='2' fill='%23111'/%3E%3C/svg%3E");
+    background-size:200px 100px;opacity:0.7;
+  }
+
+  .container { position:relative;z-index:1;max-width:800px;margin:0 auto;padding:2rem 1.5rem 4rem; }
+
+  /* Nav bar */
+  .quiz-nav {
+    display:flex;justify-content:space-between;align-items:center;
+    padding:1rem 0;margin-bottom:2rem;
+    border-bottom:1px solid rgba(255,255,255,0.05);
+  }
+  .quiz-nav a { text-decoration:none; }
+  .nav-logo-sm {
+    font-family:'Righteous',cursive;font-size:1.2rem;
+  }
+  .nav-logo-sm .w1 { color:var(--neon-yellow); }
+  .nav-logo-sm .w2 { color:var(--neon-pink); }
+  .back-link {
+    color:var(--text-dim);font-size:0.85rem;font-weight:600;
+    transition:color 0.2s;
+  }
+  .back-link:hover { color:var(--neon-yellow); }
+
+  /* Header */
+  .quiz-header { text-align:center;margin-bottom:3rem; }
+  .quiz-header .label {
+    font-size:0.72rem;text-transform:uppercase;letter-spacing:0.18em;
+    color:var(--neon-pink);font-weight:700;margin-bottom:0.5rem;
+    text-shadow:0 0 8px rgba(255,45,138,0.3);
+  }
+  .quiz-header h1 {
+    font-family:'Righteous',cursive;font-size:clamp(2rem,5vw,3.2rem);
+    margin-bottom:0.5rem;
+  }
+  .quiz-header .sub {
+    color:var(--text-dim);font-size:0.95rem;
+  }
+
+  /* Score bar (hidden until graded) */
+  .score-bar {
+    display:none;text-align:center;padding:2rem;margin-bottom:2.5rem;
+    border:1px solid rgba(255,45,138,0.2);border-radius:16px;
+    background:rgba(255,45,138,0.03);
+  }
+  .score-bar.visible { display:block; }
+  .score-big {
+    font-family:'Righteous',cursive;font-size:3.5rem;
+    color:var(--neon-yellow);text-shadow:0 0 20px var(--neon-yellow-glow);
+    line-height:1.1;
+  }
+  .score-label { font-size:0.85rem;color:var(--text-dim);margin-bottom:0.5rem; }
+  .score-rating {
+    font-family:'Righteous',cursive;font-size:1.4rem;margin-bottom:0.25rem;
+  }
+  .score-rating-sub { font-size:0.85rem;color:var(--text-dim);margin-bottom:1.5rem; }
+
+  /* Round divider */
+  .round-divider {
+    text-align:center;margin:2.5rem 0 1.5rem;padding:1rem 0;
+    border-top:1px solid rgba(255,255,255,0.05);
+  }
+  .round-divider:first-of-type { border-top:none;margin-top:0; }
+  .round-label {
+    font-family:'Righteous',cursive;font-size:1.3rem;
+  }
+  .round-sub { font-size:0.78rem;color:var(--text-dim);margin-top:0.25rem; }
+
+  /* Question card */
+  .q-card {
+    background:var(--card-bg);border:1px solid var(--card-border);
+    border-radius:14px;padding:1.5rem 1.8rem;margin-bottom:1rem;
+    transition:border-color 0.3s;
+  }
+  .q-card.correct-card { border-color:var(--green); }
+  .q-card.wrong-card { border-color:var(--neon-pink); }
+
+  .q-num {
+    font-size:0.7rem;text-transform:uppercase;letter-spacing:0.15em;
+    color:var(--text-dim);font-weight:700;margin-bottom:0.6rem;
+  }
+  .q-text {
+    font-family:'Righteous',cursive;font-size:1.05rem;line-height:1.5;
+    margin-bottom:1.2rem;
+  }
+  .q-options { display:grid;grid-template-columns:1fr 1fr;gap:0.6rem; }
+  @media(max-width:600px) { .q-options { grid-template-columns:1fr; } }
+
+  .q-opt {
+    background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.1);
+    border-radius:10px;padding:0.8rem 1rem;cursor:pointer;
+    font-family:'Outfit',sans-serif;font-size:0.9rem;font-weight:500;
+    color:var(--white);transition:all 0.2s;display:flex;align-items:center;gap:0.6rem;
+  }
+  .q-opt:hover { border-color:var(--neon-yellow);background:rgba(245,230,66,0.04); }
+  .q-opt.selected {
+    border-color:var(--neon-yellow);background:rgba(245,230,66,0.08);
+  }
+  .q-opt.selected .q-letter { background:var(--neon-yellow);color:var(--black); }
+  .q-opt.graded-correct {
+    border-color:var(--green) !important;background:rgba(46,204,113,0.1) !important;
+    pointer-events:none;
+  }
+  .q-opt.graded-correct .q-letter { background:var(--green);color:#fff; }
+  .q-opt.graded-wrong {
+    border-color:var(--neon-pink) !important;background:rgba(255,45,138,0.1) !important;
+    pointer-events:none;
+  }
+  .q-opt.graded-wrong .q-letter { background:var(--neon-pink);color:#fff; }
+  .q-opt.graded-dim { pointer-events:none;opacity:0.4; }
+
+  .q-letter {
+    font-family:'Righteous',cursive;font-size:0.8rem;
+    width:28px;height:28px;border-radius:7px;
+    background:rgba(255,255,255,0.06);display:flex;
+    align-items:center;justify-content:center;flex-shrink:0;
+    color:var(--text-dim);transition:all 0.2s;
+  }
+
+  .q-explanation {
+    display:none;margin-top:0.8rem;padding:0.8rem 1rem;
+    border-radius:8px;font-size:0.85rem;line-height:1.5;
+  }
+  .q-explanation.show-correct {
+    display:block;background:rgba(46,204,113,0.08);
+    border:1px solid rgba(46,204,113,0.2);color:var(--green);
+  }
+  .q-explanation.show-wrong {
+    display:block;background:rgba(255,45,138,0.08);
+    border:1px solid rgba(255,45,138,0.2);color:var(--neon-pink);
+  }
+
+  /* Submit / actions */
+  .actions {
+    text-align:center;margin-top:2.5rem;padding-top:2rem;
+    border-top:1px solid rgba(255,255,255,0.05);
+  }
+  .btn {
+    display:inline-block;padding:0.85rem 2.2rem;border-radius:100px;
+    font-weight:700;font-size:1rem;border:none;cursor:pointer;
+    font-family:'Outfit',sans-serif;transition:box-shadow 0.3s,transform 0.2s;
+    text-decoration:none;
+  }
+  .btn-pink { background:var(--neon-pink);color:var(--white); }
+  .btn-pink:hover { box-shadow:0 0 25px var(--neon-pink-glow);transform:translateY(-2px); }
+  .btn-yellow { background:var(--neon-yellow);color:var(--black); }
+  .btn-yellow:hover { box-shadow:0 0 25px var(--neon-yellow-glow);transform:translateY(-2px); }
+  .btn-outline {
+    background:transparent;color:var(--white);border:1px solid rgba(255,255,255,0.15);
+    padding:0.85rem 2.2rem;border-radius:100px;font-weight:600;font-size:1rem;
+    text-decoration:none;display:inline-block;transition:all 0.3s;margin-left:0.75rem;
+  }
+  .btn-outline:hover { border-color:var(--neon-yellow);color:var(--neon-yellow); }
+
+  /* Topic picker if bad URL */
+  .topic-grid {
+    display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));
+    gap:0.75rem;margin-top:2rem;
+  }
+  .topic-card {
+    display:block;text-align:center;padding:1.5rem 1rem;border-radius:14px;
+    background:var(--card-bg);border:1px solid var(--card-border);
+    text-decoration:none;color:var(--white);font-family:'Righteous',cursive;
+    font-size:1rem;transition:all 0.3s;
+  }
+  .topic-card:hover {
+    border-color:var(--neon-pink);box-shadow:0 0 15px rgba(255,45,138,0.1);
+    transform:translateY(-2px);
+  }
+</style>
+</head>
+<body>
+<div class="container" id="app"></div>
+
+<script>
+// ===== ALL QUIZ DATA (12 topics x 30 questions) =====
+const quizData = {
+"harry-potter": {
+  name: "Harry Potter",
+  ratings: [
+    {max:8, label:"Muggle", sub:"You might need to rewatch the films..."},
+    {max:15, label:"Hufflepuff", sub:"Loyal effort! You know the basics."},
+    {max:22, label:"Auror", sub:"Impressive! The Ministry would recruit you."},
+    {max:27, label:"Dumbledore's Army", sub:"Outstanding! Ready to fight Voldemort."},
+    {max:30, label:"Order of the Phoenix", sub:"Legendary! Dumbledore himself would be proud."}
+  ],
+  easy: [
+    {q:"What house is Harry Potter sorted into?",a:["Gryffindor","Slytherin","Ravenclaw","Hufflepuff"],c:0},
+    {q:"What is the name of Harry's pet owl?",a:["Errol","Hedwig","Pigwidgeon","Scabbers"],c:1},
+    {q:"Who is the Half-Blood Prince?",a:["Dumbledore","Voldemort","Severus Snape","Sirius Black"],c:2},
+    {q:"What position does Harry play on the Quidditch team?",a:["Chaser","Beater","Keeper","Seeker"],c:3},
+    {q:"What is the name of the magical map that shows everyone's location at Hogwarts?",a:["The Marauder's Map","The Hogwarts Atlas","The Weasley Tracker","The Sneakoscope"],c:0},
+    {q:"What does the spell 'Expelliarmus' do?",a:["Creates light","Disarms an opponent","Unlocks doors","Produces a Patronus"],c:1},
+    {q:"What are the three Unforgivable Curses?",a:["Stupefy, Obliviate, Sectumsempra","Avada Kedavra, Crucio, Imperio","Expelliarmus, Lumos, Accio","Petrificus, Reducto, Incendio"],c:1},
+    {q:"Who is the Keeper of Keys and Grounds at Hogwarts?",a:["Filch","Hagrid","Dumbledore","McGonagall"],c:1},
+    {q:"What does Lord Voldemort's name mean in French?",a:["Dark lord","Death wish","Flight of death","Evil one"],c:2},
+    {q:"What platform do students use to board the Hogwarts Express?",a:["Platform 8","Platform 9 3/4","Platform 10 1/2","Platform 7"],c:1}
+  ],
+  medium: [
+    {q:"What is the core of Harry's wand?",a:["Dragon heartstring","Unicorn hair","Phoenix feather","Thestral tail hair"],c:2},
+    {q:"What is the name of the pub that serves as the entrance to Diagon Alley?",a:["The Three Broomsticks","The Hog's Head","The Leaky Cauldron","The Broomstick Inn"],c:2},
+    {q:"What creature does Hermione accidentally turn into with Polyjuice Potion?",a:["A dog","A cat","A rat","A toad"],c:1},
+    {q:"What is the Hogwarts school motto (translated)?",a:["Knowledge is power","Never tickle a sleeping dragon","Magic conquers all","Wisdom beyond measure"],c:1},
+    {q:"Who destroys the final Horcrux (Nagini)?",a:["Harry Potter","Ron Weasley","Neville Longbottom","Hermione Granger"],c:2},
+    {q:"What form does Hermione's Patronus take?",a:["A cat","A horse","An otter","A hare"],c:2},
+    {q:"What is the name of Dumbledore's phoenix?",a:["Norbert","Fawkes","Buckbeak","Firenze"],c:1},
+    {q:"What type of dragon does Harry face in the Triwizard Tournament?",a:["Norwegian Ridgeback","Common Welsh Green","Hungarian Horntail","Swedish Short-Snout"],c:2},
+    {q:"What does the Mirror of Erised show?",a:["The future","Your deepest desire","Your worst fear","The past"],c:1},
+    {q:"Who was the Potters' Secret Keeper who betrayed them?",a:["Sirius Black","Remus Lupin","Peter Pettigrew","Albus Dumbledore"],c:2}
+  ],
+  hard: [
+    {q:"What is the name of the village where the Gaunts lived?",a:["Godric's Hollow","Little Hangleton","Ottery St Catchpole","Budleigh Babberton"],c:1},
+    {q:"What does Dumbledore see when he looks into the Mirror of Erised?",a:["Himself as Minister","Thick woolen socks","His family alive and together","Grindelwald's defeat"],c:2},
+    {q:"What is the first password to Dumbledore's office that Harry uses?",a:["Fizzing Whizzbee","Cockroach Cluster","Lemon drop","Sherbet lemon"],c:3},
+    {q:"What is the exact address of the Dursleys' home?",a:["4 Privet Drive, Little Whinging","12 Grimmauld Place","4 Privet Drive, Little Whinging, Surrey","The Burrow, Devon"],c:2},
+    {q:"What is Voldemort's mother's name?",a:["Merope Gaunt","Morfin Gaunt","Cecilia Gaunt","Hepzibah Smith"],c:0},
+    {q:"How many staircases are there at Hogwarts?",a:["100","142","160","200"],c:1},
+    {q:"What year was the first Harry Potter book published?",a:["1995","1996","1997","1998"],c:2},
+    {q:"Who was the first creature petrified by the Basilisk in Chamber of Secrets?",a:["Colin Creevey","Justin Finch-Fletchley","Mrs. Norris","Hermione Granger"],c:2},
+    {q:"What spell did Hermione use on the coins for Dumbledore's Army?",a:["Flagrate","Protean Charm","Geminio","Confundus Charm"],c:1},
+    {q:"How many known uses of dragon's blood did Dumbledore discover?",a:["7","10","12","15"],c:2}
+  ]
+},
+"the-office": {
+  name: "The Office",
+  ratings: [
+    {max:8, label:"Temp", sub:"You're the Ryan Howard of Office trivia."},
+    {max:15, label:"Dunder Mifflin Employee", sub:"You've been to a few office parties."},
+    {max:22, label:"Assistant Regional Manager", sub:"Solid knowledge. Dwight would be impressed."},
+    {max:27, label:"Regional Manager", sub:"That's what she said! Incredible work."},
+    {max:30, label:"Michael Scott Level", sub:"You ARE the Office. World's Best Boss."}
+  ],
+  easy: [
+    {q:"What is the name of the paper company in The Office?",a:["Sabre","Dunder Mifflin","Wernham Hogg","Michael Scott Paper Co."],c:1},
+    {q:"What city is the show set in?",a:["Philadelphia","Scranton","Albany","Harrisburg"],c:1},
+    {q:"What is Dwight's last name?",a:["Halpert","Schrute","Bratton","Bernard"],c:1},
+    {q:"Who does Jim Halpert marry?",a:["Karen Filippelli","Pam Beesly","Cathy Simms","Holly Flax"],c:1},
+    {q:"What is Michael Scott's catchphrase?",a:["Bears, beets, Battlestar Galactica","That's what she said","I declare bankruptcy","Identity theft is not a joke"],c:1},
+    {q:"Who is the receptionist at the start of the show?",a:["Erin","Pam","Kelly","Phyllis"],c:1},
+    {q:"What type of farm does Dwight own?",a:["Corn farm","Cattle ranch","Beet farm","Potato farm"],c:2},
+    {q:"Who replaces Michael Scott as regional manager?",a:["Dwight Schrute","Andy Bernard","Robert California","Deangelo Vickers"],c:1},
+    {q:"What is the name of the HR representative?",a:["Oscar Martinez","Stanley Hudson","Toby Flenderson","Kevin Malone"],c:2},
+    {q:"What holiday does the office celebrate with a themed party featuring 'Yankee Swap'?",a:["Halloween","Thanksgiving","Christmas","Valentine's Day"],c:2}
+  ],
+  medium: [
+    {q:"What is the name of Michael Scott's movie screenplay?",a:["Threat Level Midnight","Michael Scarn Saves the Day","The Dundies","Prison Mike"],c:0},
+    {q:"What band does Andy Bernard (Ed Helms) claim to have been in at Cornell?",a:["The Zoppity Bops","Here Comes Treble","The Nard Dogs","The Acapella Kings"],c:1},
+    {q:"What is Kevin Malone famous for spilling in the office?",a:["Coffee","Soup","Chili","Salsa"],c:2},
+    {q:"What is Dwight's middle name?",a:["Karl","Kurt","Kenneth","Klaus"],c:1},
+    {q:"Who does Michael Scott end up marrying?",a:["Jan Levinson","Carol Stills","Holly Flax","Donna Newton"],c:2},
+    {q:"What is the name of the warehouse worker who becomes a salesman?",a:["Roy Anderson","Darryl Philbin","Nate Nickerson","Val Johnson"],c:1},
+    {q:"What does Stanley Hudson love to do during meetings?",a:["Sleep","Crossword puzzles","Doodle","Text"],c:1},
+    {q:"What is the name of the annual awards ceremony Michael hosts?",a:["The Scotties","The Dundies","The Dunder Awards","The Office Oscars"],c:1},
+    {q:"Who starts the fire in the office that leads to the fire drill?",a:["Kevin","Ryan","Dwight","Michael"],c:1},
+    {q:"What does Creed Bratton's job title supposedly change to in later seasons?",a:["CEO","Quality Assurance","Nobody knows","Regional Director of Sales"],c:2}
+  ],
+  hard: [
+    {q:"What is the license plate number on Michael's car?",a:["BSTBOSS","SCR4NTN","LUV2LUV","LITTLEKIDLOVER"],c:0},
+    {q:"What flavor of cake does Michael demand for Meredith's birthday?",a:["Chocolate","Vanilla","Ice cream cake","Marble"],c:2},
+    {q:"In 'Stress Relief,' what movie does the office watch together?",a:["Die Hard","Mrs. Doubtfire","Jack Black's movie within the show","Entourage"],c:2},
+    {q:"What is the name of Jan's candle-making business?",a:["Flames by Jan","Jan's Candles","Serenity by Jan","Scented by Levinson"],c:2},
+    {q:"What hospital does Meredith get hit by Michael's car near?",a:["Scranton General","Mercy Hospital","St. Luke's","Geisinger"],c:0},
+    {q:"How many accountants work in the office?",a:["2","3","4","5"],c:1},
+    {q:"What is Robert California's real name according to the finale?",a:["Robert Kazamakis","Bob Vance","Robert Lipton","Raymond Reddington"],c:0},
+    {q:"What turtles does Dwight bring into the office for a presentation?",a:["Painted turtles","Box turtles","Snapping turtles","Sea turtles"],c:0},
+    {q:"What was the name of Michael and Jan's realtor in 'Dinner Party'?",a:["Carol","Katie","They didn't have one shown","Vikram"],c:2},
+    {q:"Who accidentally reveals that Angela's baby is Dwight's?",a:["Phyllis","Kevin","Jim","Meredith"],c:0}
+  ]
+},
+"geography": {
+  name: "Geography",
+  ratings: [
+    {max:8, label:"Lost Tourist", sub:"You might need Google Maps."},
+    {max:15, label:"Armchair Traveler", sub:"You've seen some documentaries!"},
+    {max:22, label:"Globe Trotter", sub:"You know your way around the world."},
+    {max:27, label:"Cartographer", sub:"Maps are your second language."},
+    {max:30, label:"Magellan", sub:"You could navigate the world blindfolded!"}
+  ],
+  easy: [
+    {q:"What is the largest continent by area?",a:["Africa","North America","Asia","Europe"],c:2},
+    {q:"What is the longest river in the world?",a:["Amazon","Nile","Mississippi","Yangtze"],c:1},
+    {q:"What is the smallest country in the world?",a:["Monaco","San Marino","Vatican City","Liechtenstein"],c:2},
+    {q:"On which continent is the Sahara Desert?",a:["Asia","South America","Africa","Australia"],c:2},
+    {q:"What ocean lies between North America and Europe?",a:["Pacific","Indian","Arctic","Atlantic"],c:3},
+    {q:"What is the capital of Japan?",a:["Osaka","Kyoto","Tokyo","Hiroshima"],c:2},
+    {q:"Which country has the most people?",a:["United States","China","India","Indonesia"],c:2},
+    {q:"What mountain is the tallest in the world?",a:["K2","Kilimanjaro","Mount Everest","Denali"],c:2},
+    {q:"What country is shaped like a boot?",a:["Spain","Greece","Italy","Portugal"],c:2},
+    {q:"How many continents are there?",a:["5","6","7","8"],c:2}
+  ],
+  medium: [
+    {q:"What is the capital of Australia?",a:["Sydney","Melbourne","Canberra","Brisbane"],c:2},
+    {q:"Which country has the most time zones?",a:["Russia","USA","China","France"],c:3},
+    {q:"What is the driest continent on Earth?",a:["Africa","Australia","Antarctica","Asia"],c:2},
+    {q:"Which strait separates Europe from Africa?",a:["Strait of Hormuz","Strait of Malacca","Strait of Gibraltar","Bosphorus"],c:2},
+    {q:"What is the largest island in the world?",a:["Borneo","Madagascar","Greenland","New Guinea"],c:2},
+    {q:"Which country is known as the Land of the Rising Sun?",a:["China","Thailand","Japan","South Korea"],c:2},
+    {q:"What is the deepest ocean trench?",a:["Tonga Trench","Mariana Trench","Java Trench","Philippine Trench"],c:1},
+    {q:"Which river flows through Paris?",a:["Rhine","Thames","Danube","Seine"],c:3},
+    {q:"What country is Machu Picchu located in?",a:["Bolivia","Chile","Peru","Ecuador"],c:2},
+    {q:"Which U.S. state is the largest by area?",a:["Texas","Montana","California","Alaska"],c:3}
+  ],
+  hard: [
+    {q:"What is the capital of Myanmar?",a:["Yangon","Mandalay","Naypyidaw","Bago"],c:2},
+    {q:"Which country has the most natural lakes?",a:["USA","Russia","Canada","Finland"],c:2},
+    {q:"What is the only country that borders both the Atlantic and Indian Ocean in Africa?",a:["Mozambique","Tanzania","South Africa","Kenya"],c:2},
+    {q:"What is the longest mountain range on Earth?",a:["Himalayas","Rocky Mountains","Andes","Alps"],c:2},
+    {q:"Which landlocked country is known as the 'Roof of the World'?",a:["Nepal","Bhutan","Mongolia","Tibet/China"],c:3},
+    {q:"What is the most densely populated country in the world?",a:["Bangladesh","Singapore","Monaco","Malta"],c:2},
+    {q:"The Caspian Sea borders how many countries?",a:["3","4","5","6"],c:2},
+    {q:"What is the smallest country in mainland Africa?",a:["Swaziland/Eswatini","Djibouti","The Gambia","Rwanda"],c:2},
+    {q:"What strait separates Asia from North America?",a:["Bering Strait","Drake Passage","Torres Strait","Strait of Magellan"],c:0},
+    {q:"Which European country has the most UNESCO World Heritage Sites?",a:["Spain","France","Italy","Germany"],c:2}
+  ]
+},
+"greek-mythology": {
+  name: "Greek Mythology",
+  ratings: [
+    {max:8, label:"Mortal", sub:"The gods are not impressed."},
+    {max:15, label:"Demigod", sub:"Half divine, half guessing."},
+    {max:22, label:"Hero of Olympus", sub:"Worthy of a quest!"},
+    {max:27, label:"Oracle", sub:"You can see the myths clearly."},
+    {max:30, label:"Zeus", sub:"You rule Mount Olympus!"}
+  ],
+  easy: [
+    {q:"Who is the king of the Greek gods?",a:["Poseidon","Hades","Zeus","Apollo"],c:2},
+    {q:"What is the home of the Greek gods?",a:["Olympia","Mount Olympus","Athens","Delphi"],c:1},
+    {q:"Who is the Greek goddess of love?",a:["Athena","Artemis","Hera","Aphrodite"],c:3},
+    {q:"What creature is half man, half horse?",a:["Minotaur","Satyr","Centaur","Griffin"],c:2},
+    {q:"Who is the god of the sea?",a:["Ares","Poseidon","Hermes","Hephaestus"],c:1},
+    {q:"What hero slew Medusa?",a:["Hercules","Theseus","Perseus","Achilles"],c:2},
+    {q:"What is the name of the three-headed dog guarding the underworld?",a:["Hydra","Cerberus","Chimera","Orthrus"],c:1},
+    {q:"Who is the Greek god of war?",a:["Hermes","Apollo","Ares","Hephaestus"],c:2},
+    {q:"What did Pandora open that released evil into the world?",a:["A door","A box/jar","A cave","A scroll"],c:1},
+    {q:"Who flew too close to the sun with wax wings?",a:["Daedalus","Perseus","Icarus","Orpheus"],c:2}
+  ],
+  medium: [
+    {q:"What river do souls cross to enter the underworld?",a:["Lethe","Acheron","Styx","Phlegethon"],c:2},
+    {q:"Who turned people to stone with her gaze?",a:["Circe","Scylla","Medusa","Echidna"],c:2},
+    {q:"What was Achilles' only weak spot?",a:["His wrist","His heel","His neck","His back"],c:1},
+    {q:"Who gave fire to humanity against Zeus's wishes?",a:["Hephaestus","Prometheus","Atlas","Epimetheus"],c:1},
+    {q:"What creature had the body of a lion and the head of a human?",a:["Chimera","Griffin","Sphinx","Manticore"],c:2},
+    {q:"Who was the goddess of the hunt and the moon?",a:["Athena","Hestia","Artemis","Demeter"],c:2},
+    {q:"What hero killed the Minotaur in the labyrinth?",a:["Perseus","Jason","Theseus","Odysseus"],c:2},
+    {q:"What was the name of Odysseus's wife who waited 20 years for his return?",a:["Helen","Penelope","Andromache","Calypso"],c:1},
+    {q:"Who was cursed to roll a boulder uphill for eternity?",a:["Tantalus","Prometheus","Sisyphus","Atlas"],c:2},
+    {q:"What was the golden fleece guarded by?",a:["A dragon","A hydra","A cyclops","A sphinx"],c:0}
+  ],
+  hard: [
+    {q:"Who was the ferryman of the dead across the River Styx?",a:["Thanatos","Hypnos","Charon","Minos"],c:2},
+    {q:"What were the Moirai (Fates) responsible for?",a:["Weather","Destiny and life threads","War","The seasons"],c:1},
+    {q:"Which Titan held up the sky?",a:["Cronus","Hyperion","Atlas","Prometheus"],c:2},
+    {q:"Who was Athena's mother?",a:["Hera","Metis","Leto","Demeter"],c:1},
+    {q:"What did Persephone eat in the underworld that bound her there?",a:["An apple","Ambrosia","Pomegranate seeds","Figs"],c:2},
+    {q:"How many heads did the Hydra originally have?",a:["5","7","9","12"],c:2},
+    {q:"Who was the first woman in Greek mythology?",a:["Pandora","Helen","Persephone","Gaia"],c:0},
+    {q:"What musical instrument did Apollo play?",a:["Flute","Harp","Lyre","Drums"],c:2},
+    {q:"Which hero had to complete 12 labors?",a:["Perseus","Theseus","Jason","Heracles"],c:3},
+    {q:"Who were the Cyclopes' famous creations for Zeus?",a:["The Aegis shield","Thunderbolts","Mount Olympus","The Golden Fleece"],c:1}
+  ]
+},
+"disney-villains": {
+  name: "Disney Villains",
+  ratings: [
+    {max:8, label:"Sidekick", sub:"You're more Iago than Jafar."},
+    {max:15, label:"Henchman", sub:"You know the villains, sort of."},
+    {max:22, label:"Villain in Training", sub:"Getting deliciously evil!"},
+    {max:27, label:"Master of Evil", sub:"Maleficent would be proud."},
+    {max:30, label:"Supreme Villain", sub:"The most wicked of them all!"}
+  ],
+  easy: [
+    {q:"Who is the villain in The Lion King?",a:["Jafar","Gaston","Scar","Hades"],c:2},
+    {q:"Who poisoned Snow White with an apple?",a:["Maleficent","The Evil Queen","Ursula","Lady Tremaine"],c:1},
+    {q:"Who is the sea witch in The Little Mermaid?",a:["Maleficent","Cruella","Ursula","Mother Gothel"],c:2},
+    {q:"What does Cruella de Vil want to make from dalmatians?",a:["A hat","A fur coat","Gloves","A rug"],c:1},
+    {q:"Who is the villain in Sleeping Beauty?",a:["Ursula","Maleficent","The Evil Queen","Jafar"],c:1},
+    {q:"Who is the villain in Aladdin?",a:["Jafar","Scar","Gaston","Shan Yu"],c:0},
+    {q:"What is Captain Hook afraid of?",a:["Peter Pan","Flying","A crocodile","Water"],c:2},
+    {q:"Who is the villain in 101 Dalmatians?",a:["Lady Tremaine","Cruella de Vil","Maleficent","Ursula"],c:1},
+    {q:"Who wants to marry Belle in Beauty and the Beast?",a:["The Beast","LeFou","Gaston","Cogsworth"],c:2},
+    {q:"Who is the god of the underworld in Hercules?",a:["Zeus","Ares","Hades","Poseidon"],c:2}
+  ],
+  medium: [
+    {q:"What is the name of Jafar's parrot?",a:["Diablo","Iago","Zazu","Flotsam"],c:1},
+    {q:"Who is the villain in The Princess and the Frog?",a:["Hades","Dr. Facilier","Yzma","Ratcliffe"],c:1},
+    {q:"What does Maleficent curse Aurora with?",a:["Eternal sleep from a spindle prick","Death on her 16th birthday","Losing her voice","Turning into a frog"],c:0},
+    {q:"Who is Mother Gothel's prisoner in Tangled?",a:["Elsa","Belle","Rapunzel","Ariel"],c:2},
+    {q:"What does Ursula take from Ariel in exchange for legs?",a:["Her hair","Her voice","Her memory","Her beauty"],c:1},
+    {q:"Who is the villain in The Emperor's New Groove?",a:["Gaston","Yzma","Frollo","Ratigan"],c:1},
+    {q:"What animal does Maleficent turn into during the final battle?",a:["A snake","A wolf","A dragon","A raven"],c:2},
+    {q:"Who is Scar's loyal hyena trio?",a:["Ed, Edd, Eddy","Shenzi, Banzai, Ed","Larry, Curly, Moe","Snap, Crackle, Pop"],c:1},
+    {q:"What is the name of Captain Hook's ship?",a:["The Black Pearl","The Jolly Roger","The Queen Anne","The Flying Dutchman"],c:1},
+    {q:"Who is the villain in Mulan?",a:["Jafar","Shan Yu","Li Shang","Chi-Fu"],c:1}
+  ],
+  hard: [
+    {q:"What was Ursula based on visually?",a:["A squid","The drag queen Divine","An octopus only","A mermaid"],c:1},
+    {q:"How many minutes of screen time does Maleficent have in the original Sleeping Beauty?",a:["About 5 minutes","About 8 minutes","About 15 minutes","About 20 minutes"],c:1},
+    {q:"What is the name of Ratigan's cat in The Great Mouse Detective?",a:["Lucifer","Felicia","Figaro","Duchess"],c:1},
+    {q:"What is Gaston's sidekick's name?",a:["Pierre","Jacques","LeFou","Henri"],c:2},
+    {q:"Scar's original name before being scarred was what?",a:["Taka","Mufasa Jr.","Askari","Kovu"],c:0},
+    {q:"Who was the first Disney villain to appear on screen?",a:["The Evil Queen","Captain Hook","Maleficent","The Big Bad Wolf"],c:0},
+    {q:"What is Judge Frollo's first name in The Hunchback of Notre Dame?",a:["Pierre","Claude","Jean","Henri"],c:1},
+    {q:"Who voices Hades in the 1997 Hercules?",a:["Tim Curry","James Woods","Jeremy Irons","Kevin Spacey"],c:1},
+    {q:"In what year was Sleeping Beauty (with Maleficent) released?",a:["1953","1955","1959","1961"],c:2},
+    {q:"What is the name of Cruella de Vil's henchmen?",a:["Jasper and Horace","Boris and Nigel","Jasper and Boris","Horace and Herbert"],c:0}
+  ]
+},
+"olympics": {
+  name: "Olympics",
+  ratings: [
+    {max:8, label:"Spectator", sub:"You watched the opening ceremony, at least."},
+    {max:15, label:"Athlete", sub:"You've been training your trivia!"},
+    {max:22, label:"Medalist", sub:"Bronze, silver, AND gold knowledge."},
+    {max:27, label:"Champion", sub:"Standing on the podium!"},
+    {max:30, label:"Greatest of All Time", sub:"You ARE the Olympic spirit!"}
+  ],
+  easy: [
+    {q:"How often are the Summer Olympics held?",a:["Every 2 years","Every 3 years","Every 4 years","Every 5 years"],c:2},
+    {q:"What do the five Olympic rings represent?",a:["Five sports","Five continents","Five founders","Five host cities"],c:1},
+    {q:"What city hosted the 2020 Summer Olympics (held in 2021)?",a:["Beijing","Paris","Tokyo","London"],c:2},
+    {q:"What is the Olympic motto?",a:["Faster, Higher, Stronger","Win at All Costs","Unity Through Sport","Peace and Competition"],c:0},
+    {q:"What color is the Olympic ring that represents Europe?",a:["Red","Blue","Yellow","Green"],c:1},
+    {q:"Where were the first modern Olympics held in 1896?",a:["Paris","Rome","Athens","London"],c:2},
+    {q:"What is lit at the start of every Olympics?",a:["A candle","The Olympic flame","Fireworks","A lantern"],c:1},
+    {q:"Which country has won the most total Olympic medals?",a:["China","Russia","Great Britain","United States"],c:3},
+    {q:"What sport did Michael Phelps compete in?",a:["Track and field","Gymnastics","Swimming","Diving"],c:2},
+    {q:"How many gold medals does Usain Bolt have?",a:["6","7","8","9"],c:2}
+  ],
+  medium: [
+    {q:"In what year were women first allowed to compete in the Olympics?",a:["1896","1900","1908","1920"],c:1},
+    {q:"Which city has hosted the most Summer Olympic Games?",a:["Athens","Paris","London","Tokyo"],c:2},
+    {q:"What sport was removed after the 1920 Olympics but was once a medal event?",a:["Cricket","Tug of war","Polo","Croquet"],c:1},
+    {q:"Olympic gold medals are mostly made of what material?",a:["Pure gold","Gold-plated bronze","Gold-plated silver","Platinum"],c:2},
+    {q:"Who is the most decorated Olympian of all time?",a:["Carl Lewis","Usain Bolt","Michael Phelps","Larisa Latynina"],c:2},
+    {q:"What year were the Olympics cancelled due to World War II?",a:["1936 and 1940","1940 and 1944","1944 and 1948","1940 only"],c:1},
+    {q:"What martial art became an Olympic sport in 2021?",a:["Taekwondo","Judo","Karate","Kung Fu"],c:2},
+    {q:"Which country always leads the Parade of Nations at the opening ceremony?",a:["The host country","United States","Greece","France"],c:2},
+    {q:"What is a 'perfect 10' in gymnastics associated with?",a:["Simone Biles","Mary Lou Retton","Nadia Comaneci","Olga Korbut"],c:2},
+    {q:"In which Olympics did the 'Dream Team' (USA basketball) first compete?",a:["1988 Seoul","1992 Barcelona","1996 Atlanta","2000 Sydney"],c:1}
+  ],
+  hard: [
+    {q:"What was the first city in the Southern Hemisphere to host the Olympics?",a:["Sydney","Rio de Janeiro","Melbourne","Buenos Aires"],c:2},
+    {q:"How many events were in the first modern Olympics in 1896?",a:["23","43","63","83"],c:1},
+    {q:"Which country boycotted the 1980 Moscow Olympics?",a:["Soviet Union","China","United States","Japan"],c:2},
+    {q:"What is the only Summer Olympic sport that has never been removed from the program?",a:["Swimming","Track and field","Fencing","Gymnastics"],c:1},
+    {q:"Who was the first athlete to win gold medals at five consecutive Olympics?",a:["Michael Phelps","Steve Redgrave","Carl Lewis","Al Oerter"],c:1},
+    {q:"The ancient Olympics had an event where athletes competed completely naked. What was it called?",a:["Pankration","Stadion","Gymnos","All events were nude"],c:3},
+    {q:"How long is an Olympic swimming pool?",a:["25 meters","50 meters","75 meters","100 meters"],c:1},
+    {q:"In what year did professional athletes first compete in Olympic basketball?",a:["1988","1992","1996","2000"],c:1},
+    {q:"Which country won the first ever Olympic basketball gold medal in 1936?",a:["USA","Canada","Argentina","Brazil"],c:0},
+    {q:"What does the Olympic Charter say about the minimum age for competitors?",a:["Must be 16","Must be 18","No minimum age","Must be 14"],c:2}
+  ]
+},
+"true-crime": {
+  name: "True Crime",
+  ratings: [
+    {max:8, label:"Bystander", sub:"You heard something on the news once."},
+    {max:15, label:"Armchair Detective", sub:"You've binged a few podcasts."},
+    {max:22, label:"Investigator", sub:"You could crack a cold case!"},
+    {max:27, label:"FBI Agent", sub:"The Bureau wants to hire you."},
+    {max:30, label:"Sherlock Holmes", sub:"No mystery is safe from you!"}
+  ],
+  easy: [
+    {q:"What was Al Capone finally convicted of?",a:["Murder","Bootlegging","Tax evasion","Racketeering"],c:2},
+    {q:"What serial killer was known as 'The Night Stalker'?",a:["Ted Bundy","Richard Ramirez","Jeffrey Dahmer","John Wayne Gacy"],c:1},
+    {q:"What famous prison is located in San Francisco Bay?",a:["Rikers Island","Sing Sing","Alcatraz","San Quentin"],c:2},
+    {q:"Who was Jack the Ripper's hunting ground?",a:["Paris","New York","London's East End","Rome"],c:2},
+    {q:"What was the Zodiac Killer known for sending to newspapers?",a:["Poems","Coded letters/ciphers","Photographs","Maps"],c:1},
+    {q:"In what decade was D.B. Cooper's famous plane hijacking?",a:["1960s","1970s","1980s","1990s"],c:1},
+    {q:"What serial killer dressed as a clown for children's parties?",a:["Ted Bundy","Jeffrey Dahmer","John Wayne Gacy","Ed Gein"],c:2},
+    {q:"What was Bonnie and Clyde's main crime?",a:["Kidnapping","Serial murder","Bank robbery","Arson"],c:2},
+    {q:"Who killed John Lennon?",a:["Lee Harvey Oswald","Mark David Chapman","Jack Ruby","Sirhan Sirhan"],c:1},
+    {q:"What true crime documentary made Steven Avery famous?",a:["The Jinx","Making a Murderer","Serial","The Staircase"],c:1}
+  ],
+  medium: [
+    {q:"How many victims is Ted Bundy confirmed to have killed?",a:["At least 20","At least 30","At least 40","At least 50"],c:1},
+    {q:"What was the name of the cult led by Jim Jones?",a:["Heaven's Gate","Branch Davidians","Peoples Temple","The Family"],c:2},
+    {q:"The Unabomber's real name is?",a:["Timothy McVeigh","Ted Kaczynski","Eric Rudolph","Terry Nichols"],c:1},
+    {q:"What year did the O.J. Simpson trial take place?",a:["1993","1994","1995","1996"],c:2},
+    {q:"What was the BTK Killer's day job?",a:["Postal worker","Police officer","Compliance officer/Dog catcher","Teacher"],c:2},
+    {q:"Elizabeth Smart was kidnapped from what state?",a:["California","Colorado","Utah","Arizona"],c:2},
+    {q:"What infamous cult was responsible for the Tate-LaBianca murders?",a:["Heaven's Gate","The Manson Family","Peoples Temple","Branch Davidians"],c:1},
+    {q:"How was the Golden State Killer finally caught?",a:["DNA and genealogy databases","Fingerprints","Witness testimony","Confession"],c:0},
+    {q:"What famous mobster was known as 'Whitey'?",a:["Al Capone","John Gotti","James Bulger","Lucky Luciano"],c:2},
+    {q:"The Lindbergh kidnapping involved the baby of what famous person?",a:["A president","An aviator","A movie star","An inventor"],c:1}
+  ],
+  hard: [
+    {q:"How long was the Zodiac Killer's 340 cipher unsolved?",a:["31 years","41 years","51 years","61 years"],c:2},
+    {q:"What was Jeffrey Dahmer's apartment number in Milwaukee?",a:["201","213","305","418"],c:1},
+    {q:"In what year was Jack the Ripper's murder spree in Whitechapel?",a:["1885","1888","1891","1894"],c:1},
+    {q:"What did D.B. Cooper demand as ransom?",a:["$100,000","$200,000","$500,000","$1 million"],c:1},
+    {q:"How many canonical victims is Jack the Ripper attributed?",a:["3","4","5","7"],c:2},
+    {q:"What method did the BTK Killer use to communicate with police?",a:["Phone calls","Letters and floppy disks","Email","Graffiti"],c:1},
+    {q:"Where was Ted Bundy executed?",a:["Texas","California","Florida","Washington"],c:2},
+    {q:"What was the name of the ship hijacked by Somali pirates in 2009, later made into a Tom Hanks film?",a:["Maersk Alabama","Ever Given","Costa Concordia","Prestige"],c:0},
+    {q:"How many people died in the Jonestown massacre?",a:["Over 500","Over 700","Over 900","Over 1100"],c:2},
+    {q:"What was Son of Sam's real name?",a:["Richard Ramirez","David Berkowitz","Dennis Rader","Gary Ridgway"],c:1}
+  ]
+},
+"lotr": {
+  name: "Lord of the Rings",
+  ratings: [
+    {max:8, label:"Hobbit", sub:"You've barely left the Shire."},
+    {max:15, label:"Ranger", sub:"You wander, but you're not all lost."},
+    {max:22, label:"Wizard", sub:"Your knowledge rivals Gandalf's!"},
+    {max:27, label:"Ring-Bearer", sub:"You've carried this quiz to Mordor."},
+    {max:30, label:"Eru Iluvatar", sub:"You know ALL of Middle-earth!"}
+  ],
+  easy: [
+    {q:"What is the name of the ring Frodo must destroy?",a:["The Ring of Power","The One Ring","Sauron's Ring","The Dark Ring"],c:1},
+    {q:"Who is the wizard that guides the Fellowship?",a:["Saruman","Radagast","Gandalf","Sauron"],c:2},
+    {q:"What race is Frodo Baggins?",a:["Elf","Dwarf","Hobbit","Human"],c:2},
+    {q:"Where must the One Ring be destroyed?",a:["Rivendell","Minas Tirith","Mount Doom","Isengard"],c:2},
+    {q:"What is the name of Frodo's loyal companion?",a:["Merry","Pippin","Samwise Gamgee","Legolas"],c:2},
+    {q:"Who created the One Ring?",a:["Gandalf","Saruman","Sauron","Morgoth"],c:2},
+    {q:"What is the elvish city where the Fellowship is formed?",a:["Lothlorien","Rivendell","Mirkwood","Grey Havens"],c:1},
+    {q:"What is Aragorn's sword called after it is reforged?",a:["Glamdring","Sting","Anduril","Orcrist"],c:2},
+    {q:"How many members are in the Fellowship of the Ring?",a:["7","8","9","10"],c:2},
+    {q:"What creature does Gollum call the Ring?",a:["My love","My precious","My treasure","My ring"],c:1}
+  ],
+  medium: [
+    {q:"What is Gandalf's Elvish name?",a:["Olorin","Mithrandir","Curunir","Aiwendil"],c:1},
+    {q:"Who kills the Witch-king of Angmar?",a:["Aragorn","Gandalf","Eowyn","Legolas"],c:2},
+    {q:"What gift does Galadriel give to Frodo?",a:["A sword","Lembas bread","The Light of Earendil","A cloak"],c:2},
+    {q:"What is the name of the giant spider Frodo encounters?",a:["Ungoliant","Shelob","Arachne","Mirkwood Spider"],c:1},
+    {q:"Who says 'You shall not pass!'?",a:["Aragorn","Elrond","Gandalf","Boromir"],c:2},
+    {q:"What is the Ents' forest called?",a:["Mirkwood","Lothlorien","Fangorn","Old Forest"],c:2},
+    {q:"Who is Legolas's father?",a:["Elrond","Celeborn","Thranduil","Gil-galad"],c:2},
+    {q:"What does Gimli request from Galadriel?",a:["A weapon","Three strands of her hair","Gold","Safe passage"],c:1},
+    {q:"What is the name of Gandalf's horse?",a:["Brego","Bill","Shadowfax","Asfaloth"],c:2},
+    {q:"How many Rings of Power were given to the Dwarves?",a:["3","7","9","20"],c:1}
+  ],
+  hard: [
+    {q:"What is Aragorn's age during the events of Lord of the Rings?",a:["67","77","87","97"],c:2},
+    {q:"Who was the original Dark Lord before Sauron?",a:["Ungoliant","Saruman","Morgoth","Balrog"],c:2},
+    {q:"What are the two trees of Valinor called?",a:["Telperion and Laurelin","Nimrodel and Celebrant","Galathilion and Nimloth","Mallorn and Culumalda"],c:0},
+    {q:"How many Palantiri (seeing stones) were there originally?",a:["3","5","7","9"],c:2},
+    {q:"What actor broke two toes kicking the orc helmet?",a:["Sean Astin","Orlando Bloom","Viggo Mortensen","John Rhys-Davies"],c:2},
+    {q:"What is the name of Sauron's fortress?",a:["Isengard","Minas Morgul","Barad-dur","Dol Guldur"],c:2},
+    {q:"In what year was The Fellowship of the Ring book first published?",a:["1937","1949","1954","1962"],c:2},
+    {q:"What metal is mithril compared to in terms of value?",a:["Gold","Silver","Ten times the value of gold","Priceless beyond measure"],c:2},
+    {q:"How did Boromir die?",a:["Stabbed by Lurtz","Shot with arrows by Uruk-hai","Drowned","Fell from a cliff"],c:1},
+    {q:"What is the Sindarin Elvish word for 'friend' that opens the doors of Moria?",a:["Annon","Mellon","Edro","Elen"],c:1}
+  ]
+},
+"christmas": {
+  name: "Christmas",
+  ratings: [
+    {max:8, label:"Grinch", sub:"Bah humbug! You need more holiday spirit."},
+    {max:15, label:"Elf", sub:"You've got the basics of Christmas cheer!"},
+    {max:22, label:"Rudolph", sub:"Guiding the sleigh with your knowledge!"},
+    {max:27, label:"Mrs. Claus", sub:"The real brain behind the operation!"},
+    {max:30, label:"Santa Claus", sub:"Ho ho ho! You know it ALL!"}
+  ],
+  easy: [
+    {q:"What plant is traditionally hung for kissing under at Christmas?",a:["Holly","Ivy","Mistletoe","Poinsettia"],c:2},
+    {q:"How many reindeer pull Santa's sleigh (including Rudolph)?",a:["7","8","9","10"],c:2},
+    {q:"What country is St. Nicholas (Santa Claus) originally from?",a:["Finland","Norway","Turkey","Germany"],c:2},
+    {q:"What is the name of the Grinch's dog?",a:["Spot","Max","Rex","Buddy"],c:1},
+    {q:"In the song, what did Frosty the Snowman have for a nose?",a:["A carrot","A button","A corn cob pipe","A cherry"],c:1},
+    {q:"What color is Rudolph's nose?",a:["Blue","Green","Red","Gold"],c:2},
+    {q:"What do children traditionally leave out for Santa?",a:["Cake and juice","Cookies and milk","Pie and coffee","Candy and water"],c:1},
+    {q:"How many days of Christmas are in the famous song?",a:["7","10","12","14"],c:2},
+    {q:"What is the day after Christmas called in the UK?",a:["Second Christmas","St. Stephen's Day","Boxing Day","Gift Day"],c:2},
+    {q:"Who is the main character in the movie 'Elf'?",a:["Jack Frost","Buddy","Rudolph","Kris Kringle"],c:1}
+  ],
+  medium: [
+    {q:"What was Rudolph the Red-Nosed Reindeer originally created for?",a:["A TV special","A Montgomery Ward ad","A Coca-Cola campaign","A children's book"],c:1},
+    {q:"'Jingle Bells' was originally written for what holiday?",a:["Christmas","New Year's","Thanksgiving","Easter"],c:2},
+    {q:"What Christmas movie features the line 'You'll shoot your eye out'?",a:["Home Alone","Elf","A Christmas Story","It's a Wonderful Life"],c:2},
+    {q:"In 'Home Alone,' where are the McCallisters going on vacation?",a:["London","Hawaii","Paris","New York"],c:2},
+    {q:"What is the best-selling Christmas song of all time?",a:["Jingle Bells","White Christmas","Silent Night","Last Christmas"],c:1},
+    {q:"What country started the tradition of putting up a Christmas tree?",a:["England","United States","Germany","Sweden"],c:2},
+    {q:"In 'A Christmas Carol,' what is the name of Scrooge's dead business partner?",a:["Bob Cratchit","Jacob Marley","Fred","Fezziwig"],c:1},
+    {q:"What year was the first Christmas card sent?",a:["1743","1803","1843","1890"],c:2},
+    {q:"Which reindeer is named after a lightning-related word?",a:["Dasher","Dancer","Donner","Blitzen"],c:3},
+    {q:"What is the highest-grossing Christmas movie of all time?",a:["Home Alone","The Grinch (2018)","Elf","Frozen"],c:1}
+  ],
+  hard: [
+    {q:"In what century did the tradition of Christmas stockings begin?",a:["10th century","12th century","16th century","18th century"],c:1},
+    {q:"What is Scrooge's first name in A Christmas Carol?",a:["Edward","Ebenezer","Edmund","Elijah"],c:1},
+    {q:"Which Pope declared December 25 as Christmas Day?",a:["Pope Julius I","Pope Gregory I","Pope Leo I","Pope Benedict I"],c:0},
+    {q:"What is the name of the narrator in 'How the Grinch Stole Christmas' (1966)?",a:["Boris Karloff","Jim Carrey","Anthony Hopkins","Thurl Ravenscroft"],c:0},
+    {q:"In 'It's a Wonderful Life,' what happens every time a bell rings?",a:["Santa arrives","An angel gets its wings","It starts to snow","A wish comes true"],c:1},
+    {q:"What was the first company to use Santa Claus in advertising?",a:["Coca-Cola","Macy's","Sears","White Rock Beverages"],c:3},
+    {q:"How many gifts total are given in 'The Twelve Days of Christmas'?",a:["78","144","264","364"],c:3},
+    {q:"What country celebrates Christmas with KFC as a tradition?",a:["South Korea","Japan","Brazil","Philippines"],c:1},
+    {q:"What is the Yule Log tradition originally from?",a:["Scotland","Germany","Scandinavia","France"],c:2},
+    {q:"In the original Rudolph TV special (1964), what does Rudolph's friend Hermey want to be?",a:["A teacher","A dentist","A doctor","A carpenter"],c:1}
+  ]
+},
+"halloween": {
+  name: "Halloween",
+  ratings: [
+    {max:8, label:"Scaredy Cat", sub:"Too afraid to know the facts!"},
+    {max:15, label:"Trick-or-Treater", sub:"You know the candy, at least."},
+    {max:22, label:"Witch", sub:"Brewing up some solid knowledge!"},
+    {max:27, label:"Vampire Lord", sub:"Centuries of Halloween wisdom!"},
+    {max:30, label:"Headless Horseman", sub:"The ultimate Halloween legend!"}
+  ],
+  easy: [
+    {q:"What date is Halloween celebrated?",a:["October 13","October 30","October 31","November 1"],c:2},
+    {q:"What vegetable is traditionally carved into a jack-o'-lantern?",a:["Watermelon","Squash","Pumpkin","Turnip"],c:2},
+    {q:"What do children say when they go door to door on Halloween?",a:["Happy Halloween","Trick or treat","Give me candy","Boo!"],c:1},
+    {q:"What animal is associated with witches?",a:["Dog","Owl","Black cat","Crow"],c:2},
+    {q:"What is a group of witches called?",a:["A pack","A coven","A flock","A herd"],c:1},
+    {q:"What monster is afraid of garlic and sunlight?",a:["Werewolf","Zombie","Mummy","Vampire"],c:3},
+    {q:"What is the name of the friendly ghost?",a:["Boo","Casper","Slimer","Ghosty"],c:1},
+    {q:"What classic horror movie features a masked killer named Michael Myers?",a:["Friday the 13th","Scream","Halloween","Nightmare on Elm Street"],c:2},
+    {q:"What candy is most popular on Halloween in the U.S.?",a:["Skittles","Reese's Cups","M&M's","Snickers"],c:1},
+    {q:"What flying object do witches ride?",a:["A carpet","A mop","A broom","A vacuum"],c:2}
+  ],
+  medium: [
+    {q:"What ancient Celtic festival is Halloween based on?",a:["Beltane","Imbolc","Samhain","Lughnasadh"],c:2},
+    {q:"Jack-o'-lanterns were originally carved from what vegetable in Ireland?",a:["Potatoes","Beets","Turnips","Gourds"],c:2},
+    {q:"What phobia is the fear of Halloween?",a:["Samhainophobia","Phasmophobia","Wiccaphobia","Nyctophobia"],c:0},
+    {q:"In what country did Halloween originate?",a:["United States","England","Scotland","Ireland"],c:3},
+    {q:"What does the word 'Halloween' literally mean?",a:["Night of the dead","Holy evening","Dark festival","Ghost night"],c:1},
+    {q:"What horror movie villain wears a striped sweater and has knife-fingers?",a:["Jason Voorhees","Michael Myers","Freddy Krueger","Leatherface"],c:2},
+    {q:"What is the most commercially successful horror film of all time?",a:["The Exorcist","Halloween","It","The Conjuring"],c:2},
+    {q:"How much do Americans spend on Halloween candy annually?",a:["About $1 billion","About $2 billion","About $3 billion","About $5 billion"],c:2},
+    {q:"What is a vampire's home called?",a:["A lair","A coffin","A crypt","All of the above"],c:3},
+    {q:"What famous magician died on Halloween in 1926?",a:["David Copperfield","Harry Blackstone","Harry Houdini","Penn Jillette"],c:2}
+  ],
+  hard: [
+    {q:"What is the world record for the fastest pumpkin carving?",a:["16.47 seconds","24.03 seconds","37.5 seconds","51.2 seconds"],c:0},
+    {q:"The word 'witch' comes from what Old English word?",a:["Wicce","Hexe","Bruja","Striga"],c:0},
+    {q:"What city holds the record for most jack-o'-lanterns lit at once?",a:["Salem, MA","New York City","Keene, NH","Boston, MA"],c:2},
+    {q:"What year did trick-or-treating become widespread in the U.S.?",a:["1920s","1930s","1950s","1960s"],c:2},
+    {q:"In Mexican tradition, Dia de los Muertos spans what dates?",a:["October 30-31","October 31-November 1","November 1-2","November 2-3"],c:2},
+    {q:"What was the first wrapped penny candy in America, now a Halloween staple?",a:["Candy corn","Tootsie Roll","Hershey's Kiss","Bit-O-Honey"],c:1},
+    {q:"The movie 'Halloween' (1978) was made on a budget of approximately?",a:["$100,000","$325,000","$500,000","$1 million"],c:1},
+    {q:"What phobia is the fear of spiders?",a:["Arachnophobia","Entomophobia","Myrmecophobia","Ophidiophobia"],c:0},
+    {q:"How many pieces of candy does the average American child collect on Halloween?",a:["About 50","About 100","About 150","About 250"],c:0},
+    {q:"What is the origin of bobbing for apples on Halloween?",a:["Celtic harvest festival","Roman goddess Pomona celebration","Medieval fortune-telling","Viking tradition"],c:1}
+  ]
+},
+"sports": {
+  name: "Sports",
+  ratings: [
+    {max:8, label:"Benchwarmer", sub:"You barely made the team."},
+    {max:15, label:"Starter", sub:"You've got game knowledge!"},
+    {max:22, label:"All-Star", sub:"A real sports encyclopedia!"},
+    {max:27, label:"MVP", sub:"The most valuable quiz player!"},
+    {max:30, label:"Hall of Famer", sub:"Your sports knowledge is legendary!"}
+  ],
+  easy: [
+    {q:"How many players are on a basketball team on the court at once?",a:["4","5","6","7"],c:1},
+    {q:"What sport is played at Wimbledon?",a:["Golf","Cricket","Tennis","Rugby"],c:2},
+    {q:"How many bases are on a baseball diamond?",a:["3","4","5","6"],c:1},
+    {q:"What sport does Tom Brady play?",a:["Basketball","Baseball","Football","Hockey"],c:2},
+    {q:"What is the most watched sporting event in the world?",a:["Super Bowl","Olympics","FIFA World Cup","NBA Finals"],c:2},
+    {q:"How long is a regulation NFL football game (in minutes of play)?",a:["48","60","90","120"],c:1},
+    {q:"What color card in soccer means a player is ejected?",a:["Yellow","Green","Red","Blue"],c:2},
+    {q:"What sport uses a puck?",a:["Lacrosse","Field hockey","Ice hockey","Polo"],c:2},
+    {q:"How many quarters are in a basketball game?",a:["2","3","4","5"],c:2},
+    {q:"What is the trophy for the NHL championship called?",a:["The Commissioner's Trophy","The Larry O'Brien Trophy","The Stanley Cup","The Lombardi Trophy"],c:2}
+  ],
+  medium: [
+    {q:"A regulation NBA three-point line is how far from the basket?",a:["20 feet","22 feet","23 feet 9 inches","25 feet"],c:2},
+    {q:"How many stitches are on a regulation baseball?",a:["88","98","108","118"],c:2},
+    {q:"What country has won the most FIFA World Cups?",a:["Germany","Argentina","Italy","Brazil"],c:3},
+    {q:"What is a 'hat trick' in hockey?",a:["Three assists","Three goals by one player","Three penalties","Three saves"],c:1},
+    {q:"Who holds the NFL record for most career touchdown passes?",a:["Peyton Manning","Brett Favre","Tom Brady","Drew Brees"],c:2},
+    {q:"What is the distance of a marathon?",a:["24.2 miles","25.0 miles","26.2 miles","27.5 miles"],c:2},
+    {q:"In what sport would you perform a 'slam dunk'?",a:["Volleyball","Tennis","Basketball","Badminton"],c:2},
+    {q:"What team has won the most Super Bowls?",a:["Dallas Cowboys","New England Patriots","Pittsburgh Steelers","San Francisco 49ers"],c:1},
+    {q:"What is the highest possible score in a single frame of bowling?",a:["10","20","30","50"],c:2},
+    {q:"Who is the all-time leading scorer in NBA history?",a:["Kareem Abdul-Jabbar","Michael Jordan","Kobe Bryant","LeBron James"],c:3}
+  ],
+  hard: [
+    {q:"What was the original name of the NBA when it was founded in 1946?",a:["ABA","NBL","BAA","APBA"],c:2},
+    {q:"How many dimples are on a regulation golf ball?",a:["252","336","392","422"],c:1},
+    {q:"What is the only Grand Slam tennis tournament played on clay?",a:["Australian Open","Wimbledon","US Open","French Open"],c:3},
+    {q:"What year was the first Super Bowl played?",a:["1960","1965","1967","1970"],c:2},
+    {q:"Who was the first athlete to appear on a Wheaties box?",a:["Babe Ruth","Lou Gehrig","Jesse Owens","Bob Richards"],c:1},
+    {q:"What is the diameter of a basketball hoop in inches?",a:["16","17","18","19"],c:2},
+    {q:"How long is a cricket pitch in yards?",a:["18","20","22","24"],c:2},
+    {q:"What boxer had an undefeated record of 50-0?",a:["Muhammad Ali","Floyd Mayweather Jr.","Rocky Marciano","Joe Louis"],c:1},
+    {q:"The 'Miracle on Ice' occurred in what year?",a:["1976","1980","1984","1988"],c:1},
+    {q:"What is the only NFL team to have a perfect undefeated season?",a:["1985 Chicago Bears","1972 Miami Dolphins","2007 New England Patriots","1991 Washington Redskins"],c:1}
+  ]
+},
+"movie-quotes": {
+  name: "Movie Quotes",
+  ratings: [
+    {max:8, label:"Extra", sub:"You were just in the background."},
+    {max:15, label:"Supporting Actor", sub:"You know the big lines!"},
+    {max:22, label:"Leading Role", sub:"Lights, camera, knowledge!"},
+    {max:27, label:"Director", sub:"You know every scene by heart."},
+    {max:30, label:"Cinematic Legend", sub:"A walking movie encyclopedia!"}
+  ],
+  easy: [
+    {q:"'I'll be back' is from what movie?",a:["Die Hard","Predator","The Terminator","RoboCop"],c:2},
+    {q:"'May the Force be with you' is from what franchise?",a:["Star Trek","Star Wars","Guardians of the Galaxy","The Matrix"],c:1},
+    {q:"'To infinity and beyond!' is said by which character?",a:["Woody","Mr. Incredible","Lightning McQueen","Buzz Lightyear"],c:3},
+    {q:"'Here's Johnny!' is from what horror film?",a:["Psycho","Halloween","The Shining","The Exorcist"],c:2},
+    {q:"'Just keep swimming' is from which animated movie?",a:["Moana","The Little Mermaid","Finding Nemo","Shark Tale"],c:2},
+    {q:"'I see dead people' is from what movie?",a:["Ghost","The Sixth Sense","Beetlejuice","Casper"],c:1},
+    {q:"'There's no place like home' is from what classic film?",a:["Gone with the Wind","Casablanca","The Wizard of Oz","It's a Wonderful Life"],c:2},
+    {q:"'I am Groot' is from what Marvel movie?",a:["Thor","The Avengers","Guardians of the Galaxy","Iron Man"],c:2},
+    {q:"'Life is like a box of chocolates' is from what movie?",a:["Willy Wonka","Forrest Gump","Charlie and the Chocolate Factory","Big Fish"],c:1},
+    {q:"'Hakuna Matata' is from what Disney movie?",a:["Aladdin","Jungle Book","Moana","The Lion King"],c:3}
+  ],
+  medium: [
+    {q:"'You talking to me?' is from what film?",a:["Goodfellas","Scarface","Taxi Driver","Raging Bull"],c:2},
+    {q:"What movie features the quote 'You can't handle the truth!'?",a:["The Firm","A Few Good Men","Jerry Maguire","Top Gun"],c:1},
+    {q:"'Here's looking at you, kid' is from which classic?",a:["Gone with the Wind","Casablanca","Citizen Kane","The Maltese Falcon"],c:1},
+    {q:"'You're gonna need a bigger boat' is from what movie?",a:["Titanic","Jaws","The Perfect Storm","Moby Dick"],c:1},
+    {q:"What movie features 'Nobody puts Baby in a corner'?",a:["Grease","Footloose","Dirty Dancing","Flashdance"],c:2},
+    {q:"'I'm the king of the world!' is from which film?",a:["Gladiator","Braveheart","Titanic","The Lion King"],c:2},
+    {q:"What movie features 'Keep your friends close, but your enemies closer'?",a:["The Godfather","The Godfather Part II","Scarface","Goodfellas"],c:1},
+    {q:"'Frankly, my dear, I don't give a damn' is from which movie?",a:["Casablanca","Gone with the Wind","Citizen Kane","The African Queen"],c:1},
+    {q:"'My mama always said life was like a box of chocolates' — who said this?",a:["Tom Hanks as Forrest Gump","Robin Williams","Jim Carrey","Adam Sandler"],c:0},
+    {q:"'Why so serious?' is said by which character?",a:["Bane","The Riddler","The Joker","Two-Face"],c:2}
+  ],
+  hard: [
+    {q:"'No, I am your father' — who was originally considered to play Darth Vader's voice?",a:["Orson Welles","James Earl Jones was always the choice","Christopher Lee","Vincent Price"],c:0},
+    {q:"The 'Here's Johnny!' line from The Shining was improvised by whom?",a:["Stanley Kubrick wrote it","Jack Nicholson","Shelley Duvall suggested it","Stephen King"],c:1},
+    {q:"'You're gonna need a bigger boat' from Jaws was improvised by which actor?",a:["Richard Dreyfuss","Robert Shaw","Roy Scheider","Steven Spielberg suggested it"],c:2},
+    {q:"What is the actual correct quote — 'Play it again, Sam' or something else?",a:["Play it again, Sam","Play it, Sam","Play it once, Sam, for old times' sake","Sam, play our song"],c:2},
+    {q:"In what year was the AFI '100 Years...100 Movie Quotes' list published?",a:["2001","2003","2005","2007"],c:2},
+    {q:"What was the first movie to feature the line 'I'll be back'?",a:["The Terminator (1984)","Commando (1985)","Total Recall (1990)","Predator (1987)"],c:0},
+    {q:"'Of all the gin joints in all the towns in all the world...' — who wrote Casablanca's screenplay?",a:["Julius & Philip Epstein and Howard Koch","Humphrey Bogart improvised it","Billy Wilder","Ernest Hemingway"],c:0},
+    {q:"'Houston, we have a problem' — is this the actual quote from the real Apollo 13 mission?",a:["Yes, exactly","No, the real quote was 'Houston, we've had a problem'","The real quote was 'Houston, we have a situation'","It was never actually said"],c:1},
+    {q:"What movie features the misquoted line often said as 'Elementary, my dear Watson'?",a:["No Sherlock Holmes film actually says this exact line","The Adventures of Sherlock Holmes (1939)","Sherlock Holmes (2009)","A Study in Terror"],c:0},
+    {q:"'I drink your milkshake!' is from which film?",a:["No Country for Old Men","The Master","There Will Be Blood","Gangs of New York"],c:2}
+  ]
+}
+};
+
+// ===== QUIZ ENGINE =====
+const app = document.getElementById('app');
+const params = new URLSearchParams(window.location.search);
+const topicKey = params.get('topic');
+const letters = ['A','B','C','D'];
+
+function buildTopicPicker() {
+  const topics = Object.entries(quizData);
+  app.innerHTML = `
+    <div class="quiz-nav">
+      <a href="index.html" class="nav-logo-sm"><span class="w1">Witty</span> <span class="w2">Trivia</span></a>
+      <a href="index.html#quiz" class="back-link">&larr; Back to Home</a>
+    </div>
+    <div class="quiz-header">
+      <div class="label">Interactive Quizzes</div>
+      <h1>Choose a <span style="color:var(--neon-pink)">Topic</span></h1>
+      <p class="sub">Pick a category to test your knowledge — 30 questions across Easy, Medium, and Hard.</p>
+    </div>
+    <div class="topic-grid">
+      ${topics.map(([key, t]) => `<a href="quiz.html?topic=${key}" class="topic-card">${t.name}</a>`).join('')}
+    </div>
+  `;
+}
+
+function buildQuiz(topic) {
+  const data = quizData[topic];
+  const allQs = [...data.easy, ...data.medium, ...data.hard];
+  const roundLabels = [
+    {name:'Easy', desc:'Basic knowledge — any casual fan would know these.', color:'var(--neon-yellow)'},
+    {name:'Medium', desc:'Deeper cuts — you need to really know your stuff.', color:'var(--neon-pink)'},
+    {name:'Hard', desc:'Expert territory — only true fans survive.', color:'var(--neon-yellow)'}
+  ];
+
+  let html = `
+    <div class="quiz-nav">
+      <a href="index.html" class="nav-logo-sm"><span class="w1">Witty</span> <span class="w2">Trivia</span></a>
+      <a href="quiz.html" class="back-link">&larr; All Topics</a>
+    </div>
+    <div class="quiz-header">
+      <div class="label">Witty Trivia Quiz</div>
+      <h1><span style="color:var(--neon-pink)">${data.name}</span> Trivia</h1>
+      <p class="sub">30 questions — Easy, Medium, and Hard. Select your answers, then hit Submit to see your score.</p>
+    </div>
+    <div class="score-bar" id="score-bar">
+      <div class="score-big" id="score-big"></div>
+      <div class="score-label">out of 30</div>
+      <div class="score-rating" id="score-rating"></div>
+      <div class="score-rating-sub" id="score-rating-sub"></div>
+      <button class="btn btn-pink" onclick="location.reload()">Play Again</button>
+      <a href="quiz.html" class="btn-outline">Try Another Topic</a>
+    </div>
+  `;
+
+  allQs.forEach((q, i) => {
+    const roundIdx = i < 10 ? 0 : i < 20 ? 1 : 2;
+    if (i % 10 === 0) {
+      const r = roundLabels[roundIdx];
+      html += `<div class="round-divider"><div class="round-label" style="color:${r.color}">Round ${roundIdx+1}: ${r.name}</div><div class="round-sub">${r.desc}</div></div>`;
+    }
+    html += `
+      <div class="q-card" id="qcard-${i}">
+        <div class="q-num">Question ${i+1}</div>
+        <div class="q-text">${q.q}</div>
+        <div class="q-options">
+          ${q.a.map((a, j) => `
+            <div class="q-opt" data-q="${i}" data-a="${j}" onclick="selectAnswer(${i},${j})">
+              <span class="q-letter">${letters[j]}</span>
+              <span>${a}</span>
+            </div>
+          `).join('')}
+        </div>
+        <div class="q-explanation" id="qexp-${i}"></div>
+      </div>
+    `;
+  });
+
+  html += `
+    <div class="actions" id="actions">
+      <button class="btn btn-pink" id="submit-btn" onclick="gradeQuiz()">Submit Answers</button>
+    </div>
+  `;
+
+  app.innerHTML = html;
+  window.quizAnswers = new Array(30).fill(-1);
+  window.quizCorrect = allQs.map(q => q.c);
+  window.quizAllQs = allQs;
+  window.quizRatings = data.ratings;
+}
+
+function selectAnswer(qi, ai) {
+  window.quizAnswers[qi] = ai;
+  const opts = document.querySelectorAll(`.q-opt[data-q="${qi}"]`);
+  opts.forEach(o => o.classList.remove('selected'));
+  opts[ai].classList.add('selected');
+}
+
+function gradeQuiz() {
+  let score = 0;
+  const answers = window.quizAnswers;
+  const correct = window.quizCorrect;
+  const allQs = window.quizAllQs;
+
+  for (let i = 0; i < 30; i++) {
+    const card = document.getElementById('qcard-' + i);
+    const exp = document.getElementById('qexp-' + i);
+    const opts = document.querySelectorAll(`.q-opt[data-q="${i}"]`);
+
+    if (answers[i] === correct[i]) {
+      score++;
+      card.classList.add('correct-card');
+      if (answers[i] >= 0) opts[answers[i]].classList.add('graded-correct');
+      exp.className = 'q-explanation show-correct';
+      exp.textContent = 'Correct!';
+    } else {
+      card.classList.add('wrong-card');
+      if (answers[i] >= 0) opts[answers[i]].classList.add('graded-wrong');
+      opts[correct[i]].classList.add('graded-correct');
+      exp.className = 'q-explanation show-wrong';
+      exp.textContent = 'Correct answer: ' + allQs[i].a[correct[i]];
+    }
+    opts.forEach((o,j) => {
+      if (j !== correct[i] && j !== answers[i]) o.classList.add('graded-dim');
+      o.style.pointerEvents = 'none';
+    });
+  }
+
+  // Show score
+  const bar = document.getElementById('score-bar');
+  document.getElementById('score-big').textContent = score + '/30';
+  const ratings = window.quizRatings;
+  let rating = ratings[ratings.length - 1];
+  for (const r of ratings) { if (score <= r.max) { rating = r; break; } }
+  document.getElementById('score-rating').textContent = rating.label;
+  document.getElementById('score-rating').style.color = score > 22 ? 'var(--neon-yellow)' : score > 15 ? 'var(--neon-pink)' : 'var(--text-mid)';
+  document.getElementById('score-rating-sub').textContent = rating.sub;
+  bar.classList.add('visible');
+
+  // Hide submit, scroll to top
+  document.getElementById('submit-btn').style.display = 'none';
+  document.getElementById('actions').innerHTML += '<button class="btn btn-pink" onclick="location.reload()">Play Again</button> <a href="quiz.html" class="btn-outline">Try Another Topic</a>';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// Init
+if (topicKey && quizData[topicKey]) {
+  buildQuiz(topicKey);
+} else {
+  buildTopicPicker();
+}
+</script>
+</body>
+</html>
