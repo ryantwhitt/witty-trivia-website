@@ -33,54 +33,58 @@
     overflow-x: hidden;
   }
 
-  /* ===== BRICK WALL BACKGROUND ===== */
+  /* ===== BLACK BRICK WALL BACKGROUND (CSS/SVG) ===== */
   body::before {
     content: '';
     position: fixed;
     inset: 0;
     z-index: 0;
     pointer-events: none;
-    background-image:
-      /* horizontal mortar lines */
-      repeating-linear-gradient(
-        0deg,
-        transparent,
-        transparent 48px,
-        var(--brick-line) 48px,
-        var(--brick-line) 50px
-      ),
-      /* vertical mortar — odd rows */
-      repeating-linear-gradient(
-        90deg,
-        transparent,
-        transparent 98px,
-        var(--brick-line) 98px,
-        var(--brick-line) 100px
-      );
-    opacity: 0.45;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='100'%3E%3Crect width='200' height='100' fill='%230a0a0a'/%3E%3Crect x='1' y='1' width='96' height='46' rx='2' ry='2' fill='%23111'/%3E%3Crect x='101' y='1' width='96' height='46' rx='2' ry='2' fill='%23101010'/%3E%3Crect x='51' y='51' width='96' height='46' rx='2' ry='2' fill='%23111'/%3E%3Crect x='151' y='51' width='48' height='46' rx='2' ry='2' fill='%23101010'/%3E%3Crect x='0' y='51' width='47' height='46' rx='2' ry='2' fill='%23111'/%3E%3C/svg%3E");
+    background-size: 200px 100px;
+    opacity: 0.7;
   }
 
-  /* offset every other row */
+  /* Neon light bloom cast onto the brick wall */
   body::after {
     content: '';
     position: fixed;
     inset: 0;
     z-index: 0;
     pointer-events: none;
-    background-image:
-      repeating-linear-gradient(
-        90deg,
-        transparent,
-        transparent 98px,
-        var(--brick-line) 98px,
-        var(--brick-line) 100px
-      );
-    background-position: 50px 50px;
-    background-size: 100px 100px;
-    opacity: 0.25;
+    background:
+      radial-gradient(ellipse 600px 500px at 50% 30%, rgba(255,45,138,0.06) 0%, transparent 70%),
+      radial-gradient(ellipse 500px 400px at 45% 25%, rgba(245,230,66,0.04) 0%, transparent 70%);
   }
 
-  /* ===== NEON TEXT UTILITY ===== */
+  /* ===== NEON TUBE SIGN EFFECT ===== */
+  .neon-tube-yellow {
+    color: #fffde6;
+    -webkit-text-stroke: 1.5px var(--neon-yellow);
+    text-shadow:
+      0 0 4px #fff,
+      0 0 10px var(--neon-yellow),
+      0 0 20px var(--neon-yellow),
+      0 0 40px var(--neon-yellow),
+      0 0 80px rgba(245,230,66,0.4),
+      0 0 120px rgba(245,230,66,0.2);
+    filter: brightness(1.1);
+  }
+
+  .neon-tube-pink {
+    color: #ffe6f0;
+    -webkit-text-stroke: 1.5px var(--neon-pink);
+    text-shadow:
+      0 0 4px #fff,
+      0 0 10px var(--neon-pink),
+      0 0 20px var(--neon-pink),
+      0 0 40px var(--neon-pink),
+      0 0 80px rgba(255,45,138,0.4),
+      0 0 120px rgba(255,45,138,0.2);
+    filter: brightness(1.1);
+  }
+
+  /* Legacy classes kept for other elements */
   .neon-yellow {
     color: var(--neon-yellow);
     text-shadow:
@@ -194,17 +198,19 @@
   .hero::before {
     content: '';
     position: absolute;
-    width: 500px; height: 500px;
-    background: radial-gradient(circle, rgba(255,45,138,0.08) 0%, transparent 70%);
-    top: 10%; left: -10%;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(255,45,138,0.1) 0%, transparent 70%);
+    top: 15%; left: 50%;
+    transform: translateX(-50%);
     pointer-events: none;
   }
   .hero::after {
     content: '';
     position: absolute;
-    width: 400px; height: 400px;
-    background: radial-gradient(circle, rgba(245,230,66,0.06) 0%, transparent 70%);
-    bottom: 10%; right: -5%;
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(245,230,66,0.07) 0%, transparent 70%);
+    top: 5%; left: 50%;
+    transform: translateX(-40%);
     pointer-events: none;
   }
 
@@ -239,17 +245,17 @@
 
   .hero h1 {
     font-family: 'Righteous', cursive;
-    font-size: clamp(3.5rem, 10vw, 8rem);
-    line-height: 1.0;
-    letter-spacing: 0.02em;
-    margin-bottom: 1.5rem;
+    font-size: clamp(5rem, 16vw, 12rem);
+    line-height: 0.95;
+    letter-spacing: 0.03em;
+    margin-bottom: 2rem;
     animation: fadeUp 0.8s ease;
   }
 
   .hero-sub {
-    font-size: 1.15rem;
-    color: var(--text-mid);
-    max-width: 500px;
+    font-size: 1.35rem;
+    color: #d0d0d0;
+    max-width: 550px;
     line-height: 1.7;
     margin-bottom: 2.5rem;
     animation: fadeUp 0.8s ease 0.15s both;
@@ -404,7 +410,7 @@
   .marquee-track {
     display: flex;
     gap: 2.5rem;
-    animation: marquee 120s linear infinite;
+    animation: marquee 220s linear infinite;
     width: max-content;
   }
 
@@ -454,7 +460,8 @@
     align-items: center;
     gap: 1.5rem;
     transition: all 0.3s;
-    cursor: pointer;
+    text-decoration: none;
+    color: inherit;
   }
 
   .episode-card:hover {
@@ -498,7 +505,7 @@
   .ep-play {
     width: 46px; height: 46px;
     border-radius: 50%;
-    background: var(--neon-pink);
+    background: #1DB954;
     border: none;
     cursor: pointer;
     display: flex;
@@ -506,14 +513,16 @@
     justify-content: center;
     transition: box-shadow 0.3s, transform 0.2s;
     flex-shrink: 0;
+    position: relative;
+    text-decoration: none;
   }
 
   .ep-play:hover {
-    box-shadow: 0 0 20px var(--neon-pink-glow);
+    box-shadow: 0 0 20px rgba(29,185,84,0.5);
     transform: scale(1.1);
   }
 
-  .ep-play svg { width: 16px; height: 16px; fill: var(--white); margin-left: 2px; }
+  .ep-play svg { width: 22px; height: 22px; fill: var(--white); }
 
   /* ===== QUIZ CTA ===== */
   .quiz-banner {
@@ -753,18 +762,40 @@
     to { opacity: 1; transform: translateY(0); }
   }
 
-  /* flicker effect for neon feel */
-  @keyframes flicker {
-    0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% { opacity: 1; }
-    20%, 24%, 55% { opacity: 0.85; }
+  /* Realistic neon flicker — brief random-feeling dims */
+  @keyframes neonFlicker {
+    0%, 100% { opacity: 1; }
+    4% { opacity: 1; }
+    4.5% { opacity: 0.7; }
+    5% { opacity: 1; }
+    5.3% { opacity: 0.8; }
+    5.6% { opacity: 1; }
+    50% { opacity: 1; }
+    50.5% { opacity: 0.75; }
+    51% { opacity: 1; }
+    78% { opacity: 1; }
+    78.3% { opacity: 0.65; }
+    78.6% { opacity: 0.9; }
+    79% { opacity: 1; }
   }
 
-  .hero h1 { animation: fadeUp 0.8s ease, flicker 4s infinite 2s; }
+  .hero h1 {
+    animation: fadeUp 0.8s ease, neonFlicker 8s infinite 2s;
+  }
 
   /* ===== RESPONSIVE ===== */
   @media (max-width: 768px) {
     .nav-links { display: none; }
     .mobile-menu-btn { display: block; }
+
+    .hero h1 {
+      font-size: clamp(3.5rem, 14vw, 6rem);
+    }
+
+    .neon-tube-yellow,
+    .neon-tube-pink {
+      -webkit-text-stroke: 1px;
+    }
 
     .episode-card {
       grid-template-columns: 1fr;
@@ -801,7 +832,7 @@
     <li><a href="#quiz">Play Trivia</a></li>
     <li><a href="#about">About</a></li>
     <li><a href="#newsletter">Newsletter</a></li>
-    <li><a href="#" class="nav-cta">Listen Now &#9654;</a></li>
+    <li><a href="https://open.spotify.com/show/2VnaYzWbSenR6p5NiXVggz" target="_blank" rel="noopener" class="nav-cta">Listen Now &#9654;</a></li>
   </ul>
   <button class="mobile-menu-btn">&#9776;</button>
 </nav>
@@ -813,8 +844,8 @@
     New Episodes Weekly
   </div>
   <h1>
-    <span class="neon-yellow">Witty</span><br>
-    <span class="neon-pink">Trivia</span>
+    <span class="neon-tube-yellow">Witty</span><br>
+    <span class="neon-tube-pink">Trivia</span>
   </h1>
   <p class="hero-sub">
     Two brothers. Endless fun facts. Test your knowledge and become the ultimate trivia champion — one episode at a time.
@@ -828,15 +859,15 @@
   </div>
   <div class="hero-platforms">
     <span>Listen on</span>
-    <a href="#" class="platform-pill">Spotify</a>
-    <a href="#" class="platform-pill">Apple Podcasts</a>
+    <a href="https://open.spotify.com/show/2VnaYzWbSenR6p5NiXVggz" target="_blank" rel="noopener" class="platform-pill">Spotify</a>
+    <a href="https://podcasts.apple.com/us/podcast/witty-whitt-trivia/id1711445457" target="_blank" rel="noopener" class="platform-pill">Apple Podcasts</a>
     <a href="#" class="platform-pill">YouTube</a>
   </div>
 </section>
 
 <!-- FUN FACTS MARQUEE -->
 <div class="fun-fact-strip">
-  <div class="marquee-track">
+  <div class="marquee-track" id="marquee-track">
     <span class="marquee-item"><span class="bullet">&#9670;</span> Honey never spoils — 3,000-year-old jars were found still edible</span>
     <span class="marquee-item"><span class="bullet">&#9670;</span> Octopuses have three hearts and blue blood</span>
     <span class="marquee-item"><span class="bullet">&#9670;</span> A day on Venus is longer than its year</span>
@@ -847,7 +878,6 @@
     <span class="marquee-item"><span class="bullet">&#9670;</span> A group of flamingos is called a "flamboyance"</span>
     <span class="marquee-item"><span class="bullet">&#9670;</span> Scotland's national animal is the unicorn</span>
     <span class="marquee-item"><span class="bullet">&#9670;</span> The inventor of the Pringles can is buried in one</span>
-    <span class="marquee-item"><span class="bullet">&#9670;</span> There are more possible chess games than atoms in the observable universe</span>
     <span class="marquee-item"><span class="bullet">&#9670;</span> Wombat poop is cube-shaped</span>
     <span class="marquee-item"><span class="bullet">&#9670;</span> The Eiffel Tower grows about 6 inches in summer due to heat expansion</span>
     <span class="marquee-item"><span class="bullet">&#9670;</span> Cows have best friends and get stressed when separated</span>
@@ -863,13 +893,11 @@
     <span class="marquee-item"><span class="bullet">&#9670;</span> There's a basketball court on the top floor of the U.S. Supreme Court building</span>
     <span class="marquee-item"><span class="bullet">&#9670;</span> Sea otters hold hands while sleeping so they don't drift apart</span>
     <span class="marquee-item"><span class="bullet">&#9670;</span> The average person walks about 100,000 miles in a lifetime</span>
-    <span class="marquee-item"><span class="bullet">&#9670;</span> A day on Mercury lasts 59 Earth days</span>
     <span class="marquee-item"><span class="bullet">&#9670;</span> Sloths can hold their breath longer than dolphins — up to 40 minutes</span>
     <span class="marquee-item"><span class="bullet">&#9670;</span> Apples float because they're 25% air</span>
     <span class="marquee-item"><span class="bullet">&#9670;</span> Nintendo was founded in 1889 as a playing card company</span>
     <span class="marquee-item"><span class="bullet">&#9670;</span> A cloud can weigh more than a million pounds</span>
     <span class="marquee-item"><span class="bullet">&#9670;</span> Humans share about 60% of their DNA with bananas</span>
-    <span class="marquee-item"><span class="bullet">&#9670;</span> The average cumulus cloud weighs about 1.1 million pounds</span>
     <span class="marquee-item"><span class="bullet">&#9670;</span> Armadillos almost always give birth to identical quadruplets</span>
     <span class="marquee-item"><span class="bullet">&#9670;</span> The word "nerd" was first coined by Dr. Seuss</span>
     <span class="marquee-item"><span class="bullet">&#9670;</span> A flock of crows is called a "murder"</span>
@@ -882,62 +910,65 @@
     <span class="marquee-item"><span class="bullet">&#9670;</span> The Great Wall of China is held together with sticky rice</span>
     <span class="marquee-item"><span class="bullet">&#9670;</span> Elephants are the only animal that can't jump</span>
     <span class="marquee-item"><span class="bullet">&#9670;</span> The original name for the butterfly was "flutterby"</span>
-    <span class="marquee-item"><span class="bullet">&#9670;</span> Hot water freezes faster than cold water — it's called the Mpemba effect</span>
+    <span class="marquee-item"><span class="bullet">&#9670;</span> Hot water freezes faster than cold water — the Mpemba effect</span>
     <span class="marquee-item"><span class="bullet">&#9670;</span> There are more fake flamingos in the world than real ones</span>
     <span class="marquee-item"><span class="bullet">&#9670;</span> The unicorn is mentioned in the King James Bible nine times</span>
     <span class="marquee-item"><span class="bullet">&#9670;</span> Koalas sleep up to 22 hours a day</span>
     <span class="marquee-item"><span class="bullet">&#9670;</span> Avocados are toxic to birds</span>
-    <!-- duplicate set for seamless loop -->
-    <span class="marquee-item"><span class="bullet">&#9670;</span> Honey never spoils — 3,000-year-old jars were found still edible</span>
-    <span class="marquee-item"><span class="bullet">&#9670;</span> Octopuses have three hearts and blue blood</span>
-    <span class="marquee-item"><span class="bullet">&#9670;</span> A day on Venus is longer than its year</span>
-    <span class="marquee-item"><span class="bullet">&#9670;</span> There are more trees on Earth than stars in the Milky Way</span>
-    <span class="marquee-item"><span class="bullet">&#9670;</span> Bananas are berries — strawberries are not</span>
-    <span class="marquee-item"><span class="bullet">&#9670;</span> The shortest war in history lasted 38 minutes</span>
-    <span class="marquee-item"><span class="bullet">&#9670;</span> Cleopatra lived closer in time to the Moon landing than to the Great Pyramid</span>
-    <span class="marquee-item"><span class="bullet">&#9670;</span> A group of flamingos is called a "flamboyance"</span>
-    <span class="marquee-item"><span class="bullet">&#9670;</span> Scotland's national animal is the unicorn</span>
-    <span class="marquee-item"><span class="bullet">&#9670;</span> The inventor of the Pringles can is buried in one</span>
+    <span class="marquee-item"><span class="bullet">&#9670;</span> Dumbledore's full name has 11 words in it</span>
+    <span class="marquee-item"><span class="bullet">&#9670;</span> J.K. Rowling considered killing Ron Weasley halfway through the series</span>
+    <span class="marquee-item"><span class="bullet">&#9670;</span> The Sorting Hat was originally going to be a talking gargoyle</span>
+    <span class="marquee-item"><span class="bullet">&#9670;</span> Michael Scott's "That's what she said" is used 37 times in The Office</span>
+    <span class="marquee-item"><span class="bullet">&#9670;</span> Dwight Schrute's desk was auctioned for over $30,000 after the show ended</span>
+    <span class="marquee-item"><span class="bullet">&#9670;</span> Steve Carell was not the first choice for Michael Scott — Bob Odenkirk almost got it</span>
+    <span class="marquee-item"><span class="bullet">&#9670;</span> The Parks and Rec pilot was shot in the same building as The Office</span>
+    <span class="marquee-item"><span class="bullet">&#9670;</span> Ron Swanson's meat obsession was inspired by Nick Offerman's real life</span>
+    <span class="marquee-item"><span class="bullet">&#9670;</span> Lil Sebastian was played by a miniature horse named Gideon</span>
+    <span class="marquee-item"><span class="bullet">&#9670;</span> Zeus once turned into a swan to seduce a mortal — Greek myths are wild</span>
+    <span class="marquee-item"><span class="bullet">&#9670;</span> Athena was born fully grown from Zeus's forehead</span>
+    <span class="marquee-item"><span class="bullet">&#9670;</span> The Minotaur lived in a labyrinth designed by Daedalus on Crete</span>
+    <span class="marquee-item"><span class="bullet">&#9670;</span> Jack the Ripper was never officially identified</span>
+    <span class="marquee-item"><span class="bullet">&#9670;</span> D.B. Cooper hijacked a plane in 1971 and was never found</span>
+    <span class="marquee-item"><span class="bullet">&#9670;</span> The Zodiac Killer's 340 cipher wasn't cracked until 2020</span>
+    <span class="marquee-item"><span class="bullet">&#9670;</span> Maleficent was only on screen for about 8 minutes in Sleeping Beauty</span>
+    <span class="marquee-item"><span class="bullet">&#9670;</span> Scar from The Lion King was originally going to be a rogue baboon</span>
+    <span class="marquee-item"><span class="bullet">&#9670;</span> Ursula from The Little Mermaid was modeled after the drag queen Divine</span>
+    <span class="marquee-item"><span class="bullet">&#9670;</span> Viggo Mortensen broke his toe kicking the orc helmet — that scream is real</span>
+    <span class="marquee-item"><span class="bullet">&#9670;</span> Sean Astin nearly drowned filming the final scene of Fellowship of the Ring</span>
+    <span class="marquee-item"><span class="bullet">&#9670;</span> The One Ring inscription is Black Speech — Tolkien hated writing in it</span>
+    <span class="marquee-item"><span class="bullet">&#9670;</span> The first modern Olympics in 1896 had only 14 countries competing</span>
+    <span class="marquee-item"><span class="bullet">&#9670;</span> Olympic gold medals are actually 92.5% silver with gold plating</span>
+    <span class="marquee-item"><span class="bullet">&#9670;</span> Tug of war was an Olympic event from 1900 to 1920</span>
+    <span class="marquee-item"><span class="bullet">&#9670;</span> Rudolph the Red-Nosed Reindeer was created for a Montgomery Ward ad in 1939</span>
+    <span class="marquee-item"><span class="bullet">&#9670;</span> "Jingle Bells" was originally written for Thanksgiving, not Christmas</span>
+    <span class="marquee-item"><span class="bullet">&#9670;</span> The tradition of Christmas trees came from 16th-century Germany</span>
+    <span class="marquee-item"><span class="bullet">&#9670;</span> Halloween candy sales in the U.S. top $3 billion every year</span>
+    <span class="marquee-item"><span class="bullet">&#9670;</span> The word "witch" comes from the Old English "wicce" meaning wise woman</span>
+    <span class="marquee-item"><span class="bullet">&#9670;</span> Jack-o'-lanterns were originally carved from turnips in Ireland</span>
+    <span class="marquee-item"><span class="bullet">&#9670;</span> A baseball has exactly 108 stitches</span>
+    <span class="marquee-item"><span class="bullet">&#9670;</span> The NBA three-point line is 23 feet 9 inches from the basket</span>
+    <span class="marquee-item"><span class="bullet">&#9670;</span> A regulation NFL football is nicknamed "The Duke" after Wellington Mara</span>
+    <span class="marquee-item"><span class="bullet">&#9670;</span> "Here's looking at you, kid" was improvised by Humphrey Bogart in Casablanca</span>
+    <span class="marquee-item"><span class="bullet">&#9670;</span> The famous "I am your father" line is misquoted — it's actually "No, I am your father"</span>
+    <span class="marquee-item"><span class="bullet">&#9670;</span> "You're gonna need a bigger boat" was ad-libbed by Roy Scheider in Jaws</span>
+    <span class="marquee-item"><span class="bullet">&#9670;</span> Russia has 11 time zones — more than any other country</span>
+    <span class="marquee-item"><span class="bullet">&#9670;</span> Canada has more lakes than the rest of the world combined</span>
+    <span class="marquee-item"><span class="bullet">&#9670;</span> Australia is wider than the moon</span>
+    <span class="marquee-item"><span class="bullet">&#9670;</span> Alaska is simultaneously the most western, eastern, and northern U.S. state</span>
+    <span class="marquee-item"><span class="bullet">&#9670;</span> Rhode Island could fit inside Alaska about 425 times</span>
+    <span class="marquee-item"><span class="bullet">&#9670;</span> Kentucky has more bourbon barrels than people</span>
+    <span class="marquee-item"><span class="bullet">&#9670;</span> Shrek was originally voiced by Chris Farley before Mike Myers took over</span>
+    <span class="marquee-item"><span class="bullet">&#9670;</span> Lord Farquaad was modeled after Disney CEO Michael Eisner as a joke</span>
+    <span class="marquee-item"><span class="bullet">&#9670;</span> The Shrek franchise has grossed over $3.5 billion worldwide</span>
+    <span class="marquee-item"><span class="bullet">&#9670;</span> "Breaking Free" from High School Musical was recorded in one take by Zac Efron's singing double</span>
+    <span class="marquee-item"><span class="bullet">&#9670;</span> Zac Efron's singing was dubbed in HSM1 but he sang himself in HSM2</span>
+    <span class="marquee-item"><span class="bullet">&#9670;</span> High School Musical was the most-watched Disney Channel Original Movie when it premiered</span>
+    <span class="marquee-item"><span class="bullet">&#9670;</span> A group of pugs is called a "grumble"</span>
+    <span class="marquee-item"><span class="bullet">&#9670;</span> The inventor of the fire hydrant is unknown because the patent was destroyed in a fire</span>
+    <span class="marquee-item"><span class="bullet">&#9670;</span> A day on Mercury lasts 59 Earth days</span>
     <span class="marquee-item"><span class="bullet">&#9670;</span> There are more possible chess games than atoms in the observable universe</span>
-    <span class="marquee-item"><span class="bullet">&#9670;</span> Wombat poop is cube-shaped</span>
-    <span class="marquee-item"><span class="bullet">&#9670;</span> The Eiffel Tower grows about 6 inches in summer due to heat expansion</span>
-    <span class="marquee-item"><span class="bullet">&#9670;</span> Cows have best friends and get stressed when separated</span>
-    <span class="marquee-item"><span class="bullet">&#9670;</span> The human nose can detect over 1 trillion different scents</span>
-    <span class="marquee-item"><span class="bullet">&#9670;</span> Oxford University is older than the Aztec Empire</span>
-    <span class="marquee-item"><span class="bullet">&#9670;</span> A jiffy is an actual unit of time — 1/100th of a second</span>
-    <span class="marquee-item"><span class="bullet">&#9670;</span> The total weight of ants on Earth roughly equals the weight of all humans</span>
-    <span class="marquee-item"><span class="bullet">&#9670;</span> Saturn would float if you found a bathtub big enough</span>
-    <span class="marquee-item"><span class="bullet">&#9670;</span> Sharks are older than trees</span>
-    <span class="marquee-item"><span class="bullet">&#9670;</span> A bolt of lightning is five times hotter than the surface of the sun</span>
-    <span class="marquee-item"><span class="bullet">&#9670;</span> The dot over the letters "i" and "j" is called a tittle</span>
-    <span class="marquee-item"><span class="bullet">&#9670;</span> Antarctica is the largest desert on Earth</span>
-    <span class="marquee-item"><span class="bullet">&#9670;</span> There's a basketball court on the top floor of the U.S. Supreme Court building</span>
-    <span class="marquee-item"><span class="bullet">&#9670;</span> Sea otters hold hands while sleeping so they don't drift apart</span>
-    <span class="marquee-item"><span class="bullet">&#9670;</span> The average person walks about 100,000 miles in a lifetime</span>
-    <span class="marquee-item"><span class="bullet">&#9670;</span> A day on Mercury lasts 59 Earth days</span>
-    <span class="marquee-item"><span class="bullet">&#9670;</span> Sloths can hold their breath longer than dolphins — up to 40 minutes</span>
-    <span class="marquee-item"><span class="bullet">&#9670;</span> Apples float because they're 25% air</span>
-    <span class="marquee-item"><span class="bullet">&#9670;</span> Nintendo was founded in 1889 as a playing card company</span>
-    <span class="marquee-item"><span class="bullet">&#9670;</span> A cloud can weigh more than a million pounds</span>
-    <span class="marquee-item"><span class="bullet">&#9670;</span> Humans share about 60% of their DNA with bananas</span>
-    <span class="marquee-item"><span class="bullet">&#9670;</span> The average cumulus cloud weighs about 1.1 million pounds</span>
-    <span class="marquee-item"><span class="bullet">&#9670;</span> Armadillos almost always give birth to identical quadruplets</span>
-    <span class="marquee-item"><span class="bullet">&#9670;</span> The word "nerd" was first coined by Dr. Seuss</span>
-    <span class="marquee-item"><span class="bullet">&#9670;</span> A flock of crows is called a "murder"</span>
-    <span class="marquee-item"><span class="bullet">&#9670;</span> Venus is the only planet that spins clockwise</span>
-    <span class="marquee-item"><span class="bullet">&#9670;</span> Peanuts aren't nuts — they're legumes</span>
-    <span class="marquee-item"><span class="bullet">&#9670;</span> The longest hiccupping spree lasted 68 years</span>
-    <span class="marquee-item"><span class="bullet">&#9670;</span> Maine is the closest U.S. state to Africa</span>
-    <span class="marquee-item"><span class="bullet">&#9670;</span> An octopus has nine brains — one central and one in each arm</span>
-    <span class="marquee-item"><span class="bullet">&#9670;</span> Astronauts grow up to 2 inches taller in space</span>
-    <span class="marquee-item"><span class="bullet">&#9670;</span> The Great Wall of China is held together with sticky rice</span>
-    <span class="marquee-item"><span class="bullet">&#9670;</span> Elephants are the only animal that can't jump</span>
-    <span class="marquee-item"><span class="bullet">&#9670;</span> The original name for the butterfly was "flutterby"</span>
-    <span class="marquee-item"><span class="bullet">&#9670;</span> Hot water freezes faster than cold water — it's called the Mpemba effect</span>
-    <span class="marquee-item"><span class="bullet">&#9670;</span> There are more fake flamingos in the world than real ones</span>
-    <span class="marquee-item"><span class="bullet">&#9670;</span> The unicorn is mentioned in the King James Bible nine times</span>
-    <span class="marquee-item"><span class="bullet">&#9670;</span> Koalas sleep up to 22 hours a day</span>
-    <span class="marquee-item"><span class="bullet">&#9670;</span> Avocados are toxic to birds</span>
+    <span class="marquee-item"><span class="bullet">&#9670;</span> The national animal of North Korea is a winged horse called Chollima</span>
+    <span class="marquee-item"><span class="bullet">&#9670;</span> Greenland sharks can live over 400 years</span>
   </div>
 </div>
 
@@ -950,73 +981,73 @@
         <h2 class="section-title"><span class="neon-yellow">Fresh</span> Trivia, Weekly</h2>
         <p class="section-desc">Pop culture, history, science, and everything in between. Hit play and see how you stack up.</p>
       </div>
-      <a href="#" class="btn-outline" style="height:fit-content;">View All &#8594;</a>
+      <a href="https://open.spotify.com/show/2VnaYzWbSenR6p5NiXVggz" target="_blank" rel="noopener" class="btn-outline" style="height:fit-content;">View All &#8594;</a>
     </div>
 
-    <div class="episode-card">
-      <div class="ep-number">26</div>
+    <a href="https://open.spotify.com/episode/7AbuJQL9OUNc58zOkc9yia" target="_blank" rel="noopener" class="episode-card">
+      <div class="ep-number">41</div>
       <div class="ep-info">
-        <h3>Shrek 2: The Trivia Sequel</h3>
+        <h3>USA Space Exploration Trivia</h3>
         <div class="ep-meta">
-          <span class="ep-tag">Pop Culture</span>
-          <span>&bull; 42 min</span>
-          <span>&bull; Mar 2026</span>
+          <span class="ep-tag">Science</span>
+          <span>&bull; 44 min</span>
+          <span>&bull; Apr 2026</span>
         </div>
       </div>
-      <button class="ep-play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>
-    </div>
+      <span class="ep-play"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381C8.64 5.801 15.6 6.001 20.04 8.4c.54.3.72 1.02.42 1.56-.299.421-1.02.599-1.379.72z"/></svg></span>
+    </a>
 
-    <div class="episode-card">
-      <div class="ep-number">25</div>
+    <a href="https://open.spotify.com/episode/10mqkEV8k94YxjEAIIub3O" target="_blank" rel="noopener" class="episode-card">
+      <div class="ep-number">40</div>
       <div class="ep-info">
-        <h3>US States: How Well Do You Know America?</h3>
+        <h3>Unbreakable Records Trivia</h3>
+        <div class="ep-meta">
+          <span class="ep-tag">General Trivia</span>
+          <span>&bull; 40 min</span>
+          <span>&bull; Feb 2026</span>
+        </div>
+      </div>
+      <span class="ep-play"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381C8.64 5.801 15.6 6.001 20.04 8.4c.54.3.72 1.02.42 1.56-.299.421-1.02.599-1.379.72z"/></svg></span>
+    </a>
+
+    <a href="https://open.spotify.com/episode/45ULXOBLRzb8DVNo2Vay6t" target="_blank" rel="noopener" class="episode-card">
+      <div class="ep-number">39</div>
+      <div class="ep-info">
+        <h3>State Capitals</h3>
         <div class="ep-meta">
           <span class="ep-tag">Geography</span>
-          <span>&bull; 38 min</span>
-          <span>&bull; Feb 2026</span>
-        </div>
-      </div>
-      <button class="ep-play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>
-    </div>
-
-    <div class="episode-card">
-      <div class="ep-number">24</div>
-      <div class="ep-info">
-        <h3>Greek Mythology: Gods, Monsters & Mayhem</h3>
-        <div class="ep-meta">
-          <span class="ep-tag">History</span>
           <span>&bull; 45 min</span>
-          <span>&bull; Feb 2026</span>
-        </div>
-      </div>
-      <button class="ep-play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>
-    </div>
-
-    <div class="episode-card">
-      <div class="ep-number">23</div>
-      <div class="ep-info">
-        <h3>True Crime: Test Your Detective Skills</h3>
-        <div class="ep-meta">
-          <span class="ep-tag">True Crime</span>
-          <span>&bull; 50 min</span>
           <span>&bull; Jan 2026</span>
         </div>
       </div>
-      <button class="ep-play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>
-    </div>
+      <span class="ep-play"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381C8.64 5.801 15.6 6.001 20.04 8.4c.54.3.72 1.02.42 1.56-.299.421-1.02.599-1.379.72z"/></svg></span>
+    </a>
 
-    <div class="episode-card">
-      <div class="ep-number">22</div>
+    <a href="https://open.spotify.com/episode/7gfbUyT2hh0HZMvqloplg4" target="_blank" rel="noopener" class="episode-card">
+      <div class="ep-number">38</div>
       <div class="ep-info">
-        <h3>Parks and Recreation: Pawnee's Finest</h3>
+        <h3>March Madness Trivia</h3>
         <div class="ep-meta">
-          <span class="ep-tag">TV Shows</span>
-          <span>&bull; 44 min</span>
-          <span>&bull; Jan 2026</span>
+          <span class="ep-tag">Sports</span>
+          <span>&bull; 37 min</span>
+          <span>&bull; Apr 2025</span>
         </div>
       </div>
-      <button class="ep-play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>
-    </div>
+      <span class="ep-play"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381C8.64 5.801 15.6 6.001 20.04 8.4c.54.3.72 1.02.42 1.56-.299.421-1.02.599-1.379.72z"/></svg></span>
+    </a>
+
+    <a href="https://open.spotify.com/episode/6GecymnUhKkQM9VaDRRLkZ" target="_blank" rel="noopener" class="episode-card">
+      <div class="ep-number">37</div>
+      <div class="ep-info">
+        <h3>Shrek 2 Trivia</h3>
+        <div class="ep-meta">
+          <span class="ep-tag">Pop Culture</span>
+          <span>&bull; 28 min</span>
+          <span>&bull; Feb 2025</span>
+        </div>
+      </div>
+      <span class="ep-play"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381C8.64 5.801 15.6 6.001 20.04 8.4c.54.3.72 1.02.42 1.56-.299.421-1.02.599-1.379.72z"/></svg></span>
+    </a>
   </div>
 </section>
 
@@ -1072,7 +1103,7 @@
         </p>
         <div class="about-stats">
           <div>
-            <span class="stat-number yellow">25+</span>
+            <span class="stat-number yellow">40+</span>
             <span class="stat-label">Episodes</span>
           </div>
           <div>
@@ -1080,8 +1111,8 @@
             <span class="stat-label">Topics</span>
           </div>
           <div>
-            <span class="stat-number yellow">1</span>
-            <span class="stat-label">Year Strong</span>
+            <span class="stat-number yellow">2+</span>
+            <span class="stat-label">Years Strong</span>
           </div>
         </div>
       </div>
@@ -1127,10 +1158,17 @@
       <a href="#" class="social-icon" title="Instagram">IG</a>
       <a href="#" class="social-icon" title="TikTok">TT</a>
       <a href="#" class="social-icon" title="X / Twitter">X</a>
-      <a href="#" class="social-icon" title="Spotify">SP</a>
+      <a href="https://open.spotify.com/show/2VnaYzWbSenR6p5NiXVggz" target="_blank" rel="noopener" class="social-icon" title="Spotify">SP</a>
     </div>
   </div>
 </footer>
+
+<!-- Clone marquee items for seamless loop -->
+<script>
+  const track = document.getElementById('marquee-track');
+  const items = track.innerHTML;
+  track.innerHTML = items + items;
+</script>
 
 </body>
 </html>
